@@ -1,0 +1,81 @@
+services:
+  # ─────────────────────── PostgreSQL Database ────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: support_desk_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: api
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - support_desk_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────── Laravel API Backend ────────────────────────
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: support_desk_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: api
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - ./api:/var/www/html
+      - /var/www/html/vendor
+      - api_storage:/var/www/html/storage
+    ports:
+      - "8000:8000"
+    networks:
+      - support_desk_network
+
+  # ─────────────────────── Vue.js App Frontend ────────────────────────
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: support_desk_app
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://localhost:8000
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - support_desk_network
+
+# ─────────────────────── Volumes ────────────────────────────────────
+volumes:
+  db_data:
+    driver: local
+  api_storage:
+    driver: local
+
+# ─────────────────────── Networks ───────────────────────────────────
+networks:
+  support_desk_network:
+    driver: bridge
