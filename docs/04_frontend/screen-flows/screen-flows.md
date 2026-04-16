@@ -15,6 +15,26 @@ Die Screen Flows bilden die Brücke zwischen:
 
 Diese Datei beschreibt nicht die allgemeine Frontend-Architektur, sondern das konkrete Verhalten einzelner Screens aus Sicht des Benutzers und der UI.
 
+## Hinweis zur Dokumentstruktur
+
+Diese Datei ist die **Master-Datei** für die Screen Flows des Projekts.
+
+Sie dient für:
+
+- Gesamtüberblick
+- Konsistenzprüfung
+- Pflege der vollständigen Screen-Logik
+
+Für fokussierte Frontend-Arbeit werden zusätzlich aufgeteilte Dateien verwendet:
+
+- `docs/04_frontend/screen-flows/by-domain/`
+- `docs/04_frontend/screen-flows/by-use-case/`
+
+Wichtige Sonderregel:
+Im Bereich `screen-flows/by-use-case/` werden Dateien **screen-orientiert** geschnitten. Wenn mehrere Backend-Use-Cases denselben Frontend-Screen betreffen, sollen sie in einer gemeinsamen Screen-Flow-Datei zusammengefasst werden.
+
+Für normale Frontend-Sessions soll bevorzugt die kleinste passende Dokumenteinheit verwendet werden.
+
 ---
 
 ## Referenzdokumente
@@ -174,21 +194,27 @@ Der Login Screen ermöglicht einem internen Benutzer die Anmeldung am System.
 ### UI-Zustände
 
 #### Initial State
+
 Leeres Formular, Login-Button verfügbar.
 
 #### Loading State
+
 Button deaktiviert, optional Spinner oder Ladeanzeige.
 
 #### Success State
+
 Benutzer wird weitergeleitet.
 
 #### Validation Error State
+
 Feldfehler werden direkt an den Inputs angezeigt.
 
 #### Authentication Error State
+
 Allgemeine Fehlermeldung für ungültige Zugangsdaten.
 
 #### Forbidden State
+
 Hinweis, dass das Konto deaktiviert oder nicht aktiv ist.
 
 ### Typische Navigation nach Erfolg
@@ -230,15 +256,19 @@ Der Logout ist meist kein eigener großer Screen, sondern ein UI-Flow aus Naviga
 ### UI-Zustände
 
 #### Initial State
+
 Logout-Eintrag oder Button sichtbar.
 
 #### Loading State
+
 Button oder Menüpunkt kurz gesperrt.
 
 #### Success State
+
 Navigation zur Login-Seite.
 
 #### Error State
+
 Wenn der Backend-Logout fehlschlägt, Benutzer lokal trotzdem als ausgeloggt behandeln, sofern das Sicherheitsmodell dies erlaubt.
 
 ---
@@ -287,15 +317,19 @@ Ein interner Benutzer sieht seine eigenen Profildaten und Rollen.
 ### UI-Zustände
 
 #### Loading State
+
 Skeleton oder Ladeanzeige für Profilinhalte.
 
 #### Success State
+
 Profildaten sichtbar.
 
 #### Error State
+
 Allgemeine Fehlermeldung und Retry-Möglichkeit.
 
 #### Unauthenticated State
+
 Zur Login-Seite weiterleiten.
 
 ---
@@ -343,21 +377,27 @@ Ein interner Benutzer ändert erlaubte eigene Profildaten.
 ### UI-Zustände
 
 #### Initial State
+
 Formular mit bestehenden Werten.
 
 #### Loading State
+
 Speichern-Button deaktiviert, optional Spinner.
 
 #### Success State
+
 Erfolgsmeldung und aktualisierte Daten sichtbar.
 
 #### Validation Error State
+
 Feldfehler an den Inputs.
 
 #### Conflict State
+
 Zum Beispiel Benutzername bereits vergeben.
 
 #### Unauthenticated State
+
 Zur Login-Seite weiterleiten.
 
 ---
@@ -411,18 +451,23 @@ Ein berechtigter Benutzer sieht eine Liste interner Benutzerkonten.
 ### UI-Zustände
 
 #### Loading State
+
 Tabellen-Skeleton oder Spinner.
 
 #### Success State
+
 Liste sichtbar.
 
 #### Empty State
+
 Keine Benutzer vorhanden oder kein Treffer.
 
 #### Forbidden State
+
 Zugriff verweigert, weil keine passende Berechtigung vorliegt.
 
 #### Error State
+
 Allgemeiner Fehler mit Retry.
 
 ---
@@ -468,18 +513,23 @@ Ein berechtigter Benutzer erstellt ein neues internes Benutzerkonto inklusive Ro
 ### UI-Zustände
 
 #### Loading State
+
 Speichern-Button deaktiviert.
 
 #### Success State
+
 Weiterleitung zur Liste oder Detailansicht.
 
 #### Validation Error State
+
 Feldfehler anzeigen.
 
 #### Conflict State
+
 E-Mail oder Benutzername bereits vergeben.
 
 #### Forbidden State
+
 Keine Berechtigung.
 
 ---
@@ -525,21 +575,27 @@ Ein berechtigter Benutzer ändert die Daten und Rollen eines bestehenden interne
 ### UI-Zustände
 
 #### Loading State
+
 Formulardaten laden.
 
 #### Not Found State
+
 Benutzer existiert nicht.
 
 #### Validation Error State
+
 Feldfehler anzeigen.
 
 #### Conflict State
+
 E-Mail oder Benutzername bereits vergeben.
 
 #### Success State
+
 Erfolgsmeldung und aktualisierte Daten.
 
 #### Forbidden State
+
 Keine Berechtigung.
 
 ---
@@ -581,18 +637,23 @@ Ein berechtigter Benutzer steuert den Lebenszyklus eines internen Benutzers.
 ### UI-Zustände
 
 #### Confirm State
+
 Bestätigungsdialog sichtbar.
 
 #### Loading State
+
 Aktion läuft.
 
 #### Success State
+
 Status aktualisiert.
 
 #### Conflict State
+
 Backend meldet fachlichen Konflikt.
 
 #### Forbidden State
+
 Keine Berechtigung.
 
 ---
@@ -647,15 +708,19 @@ Interne Benutzer sehen und filtern Tickets.
 ### UI-Zustände
 
 #### Loading State
+
 Liste lädt.
 
 #### Success State
+
 Tickets sichtbar.
 
 #### Empty State
+
 Keine Treffer.
 
 #### Error State
+
 Fehlermeldung und Retry.
 
 ---
@@ -712,21 +777,27 @@ Ein Benutzer sieht alle relevanten Informationen zu einem Ticket und arbeitet da
 ### UI-Zustände
 
 #### Loading State
+
 Detaildaten und Nachrichten laden.
 
 #### Not Found State
+
 Ticket existiert nicht.
 
 #### Closed State
+
 Bestimmte Aktionen sind deaktiviert.
 
 #### Error State
+
 Fehler beim Laden.
 
 #### Success State
+
 Alle Daten sichtbar.
 
 #### Forbidden State
+
 Zugriff verweigert, wenn das Backend keine Berechtigung gibt.
 
 ---
@@ -763,15 +834,19 @@ Ein Ticket wird einem Bearbeiter zugewiesen oder neu zugewiesen.
 ### UI-Zustände
 
 #### Loading State
+
 Aktion läuft.
 
 #### Success State
+
 Neuer Bearbeiter sichtbar.
 
 #### Conflict State
+
 Zum Beispiel Ticket geschlossen oder Benutzer deaktiviert.
 
 #### Validation Error State
+
 Ungültige Eingabe.
 
 ---
@@ -815,15 +890,19 @@ Der Ticketstatus wird fachlich korrekt geändert.
 ### UI-Zustände
 
 #### Loading State
+
 Statusaktion läuft.
 
 #### Success State
+
 Neuer Status sichtbar.
 
 #### Conflict State
+
 Transition nicht erlaubt.
 
 #### Closed State
+
 weitere Bearbeitung gesperrt.
 
 ---
@@ -922,15 +1001,19 @@ Ein Ticket wird einem fachlich passenden Contract zugeordnet oder die Contract-Z
 ### UI-Zustände
 
 #### Loading State
+
 Aktion läuft.
 
 #### Success State
+
 Contract-Kontext aktualisiert.
 
 #### Conflict State
+
 Zum Beispiel Contract gehört nicht zum Customer oder Ticket ist geschlossen.
 
 #### Empty State
+
 Customer hat keine Contracts.
 
 ---
@@ -1564,18 +1647,23 @@ Ein berechtigter Benutzer sieht unklare eingehende Anfragen in einer Prüfwartes
 ### UI-Zustände
 
 #### Loading State
+
 Liste lädt.
 
 #### Success State
+
 Prüffälle sichtbar.
 
 #### Empty State
+
 Keine offenen Prüffälle vorhanden.
 
 #### Error State
+
 Fehler beim Laden.
 
 #### Forbidden State
+
 Keine passende Rolle oder Berechtigung.
 
 ---
@@ -1627,21 +1715,27 @@ Ein berechtigter Benutzer prüft einen unklaren Eingang und trifft eine fachlich
 ### UI-Zustände
 
 #### Loading State
+
 Prüffall lädt.
 
 #### Not Found State
+
 Prüffall existiert nicht.
 
 #### Success State
+
 Prüffall und Entscheidungsaktionen sichtbar.
 
 #### Validation Error State
+
 Feldfehler bei Zuordnung oder Customer-Anlage.
 
 #### Conflict State
+
 Backend lehnt Entscheidung wegen fachlichem Konflikt ab.
 
 #### Forbidden State
+
 Keine passende Rolle oder Berechtigung.
 
 ---

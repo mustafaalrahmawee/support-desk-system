@@ -19,6 +19,23 @@ Das System kennt mehrere interne Rollen mit unterschiedlichen Verantwortlichkeit
 
 Die konkrete Berechtigung eines Benutzers hängt von Rolle und Fachkontext ab.
 
+## Hinweis zur Dokumentstruktur
+
+Diese Datei ist die **Master-Datei** für alle Use Cases des Projekts.
+
+Sie dient für:
+
+- Gesamtüberblick
+- Konsistenzprüfung
+- fachliche Gesamtpflege
+
+Für fokussierte Arbeit mit kleineren Kontexten werden zusätzlich aufgeteilte Dateien verwendet:
+
+- `docs/02_use-cases/by-domain/` für fachlich zusammenhängende Session-Kontexte
+- `docs/02_use-cases/by-use-case/` für atomare einzelne Use Cases
+
+Für normale Implementierungs- oder Review-Sessions soll bevorzugt die kleinste passende Dokumenteinheit verwendet werden.
+
 ---
 
 # Phase 1: Eingang, Zuordnung, Inbound-Prüfung und Kommunikation

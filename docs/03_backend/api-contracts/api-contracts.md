@@ -14,6 +14,24 @@ Die Datei dient als gemeinsame Referenz für:
 - Feature-Tests
 - Agentic-AI-Kontext für Codegenerierung und Umsetzung
 
+## Hinweis zur Dokumentstruktur
+
+Diese Datei ist die **Master-Datei** für die API-Contracts des Projekts.
+
+Sie dient für:
+
+- Gesamtüberblick
+- Konsistenzprüfung
+- Pflege der vollständigen API-Verträge
+
+Für fokussierte Backend-Arbeit werden zusätzlich aufgeteilte Dateien verwendet, insbesondere:
+
+- `docs/03_backend/api-contracts/by-domain/`
+
+Da API-Contracts oft enger an fachlichen Bereichen als an exakt einem einzelnen Use Case hängen, erfolgt die Aufteilung hier primär über fachliche Domains.
+
+Für normale Implementierungs- oder Review-Sessions soll bevorzugt die kleinste passende Dokumenteinheit verwendet werden.
+
 ---
 
 ## Referenzdokumente
@@ -113,9 +131,7 @@ Beispiel:
 {
   "message": "Die eingegebenen Daten sind ungültig.",
   "errors": {
-    "email": [
-      "Das Feld E-Mail ist erforderlich."
-    ]
+    "email": ["Das Feld E-Mail ist erforderlich."]
   }
 }
 ```
@@ -230,9 +246,7 @@ Ein interner Benutzer meldet sich am System an.
       "last_name": "Beispiel",
       "email": "agent@example.com",
       "is_active": true,
-      "roles": [
-        "support_agent"
-      ]
+      "roles": ["support_agent"]
     },
     "token": "plain-text-token-or-session-indicator"
   }
@@ -304,9 +318,7 @@ Ein authentifizierter interner Benutzer ruft die eigenen Profildaten ab.
     "username": "anna.beispiel",
     "email": "agent@example.com",
     "is_active": true,
-    "roles": [
-      "support_agent"
-    ],
+    "roles": ["support_agent"],
     "created_at": "2026-04-12T10:00:00Z",
     "updated_at": "2026-04-12T12:00:00Z"
   }
@@ -438,9 +450,7 @@ Optional:
   "password": "secret-password",
   "password_confirmation": "secret-password",
   "is_active": true,
-  "role_names": [
-    "support_agent"
-  ]
+  "role_names": ["support_agent"]
 }
 ```
 
@@ -462,9 +472,7 @@ Optional:
     "username": "anna.beispiel",
     "email": "anna@example.com",
     "is_active": true,
-    "roles": [
-      "support_agent"
-    ]
+    "roles": ["support_agent"]
   }
 }
 ```
@@ -498,10 +506,7 @@ Optional:
   "username": "anna.muster",
   "email": "anna.muster@example.com",
   "is_active": true,
-  "role_names": [
-    "support_agent",
-    "inbound_reviewer"
-  ]
+  "role_names": ["support_agent", "inbound_reviewer"]
 }
 ```
 
