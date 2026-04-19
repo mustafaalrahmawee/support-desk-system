@@ -84,11 +84,23 @@ Für jeden UC im bestätigten Plan:
 
 1. `docs/by-use-case/{uc}.md` lesen
 2. **Backend implementieren** — Abschnitte 1–3
-3. **Backend-QA** — Abschnitt 4
+3. **Backend-QA** — `/backend-qa {uc}` ausführen → Bericht erhalten → Nachbesserungsloop
 4. **Frontend implementieren** — Abschnitte 5–8
-5. **Frontend-QA** — Abschnitt 9
+5. **Frontend-QA** — `/frontend-qa {uc}` ausführen → Bericht erhalten → Nachbesserungsloop
 
 Kein Abschnitt überspringen. Bei Kontextfülle: `/clear` und mit dem nächsten UC weitermachen.
+
+### Nachbesserungsloop nach QA
+
+Wenn ein QA-Subagent Fehler meldet:
+
+1. Analysiere den Bericht — identifiziere betroffene Datei und Ursache
+2. Behebe den Fehler — ein Versuch zählt nur bei gezielter Code-Änderung, kein bloßer Re-Run
+3. Starte den QA-Subagenten erneut
+4. Wiederhole bis alle Tests grün oder **maximal 3 Versuche**
+5. Nach 3 Versuchen: stoppe und frage den Benutzer mit detailliertem Bericht (was fehlschlägt, was versucht wurde, mögliche Ursache)
+
+Bei `/frontend-qa`: Nur **Typ-A-Fehler** (UI) selbst beheben. Bei Typ-B (Infrastruktur) oder Typ-C (Backend-Logik) **keine Vue-Dateien ändern** — zuerst die Ursache klären.
 
 ---
 

@@ -2,6 +2,8 @@
 
 ## Session-Start (PFLICHT)
 
+Jede Implementierungs-Session startet im **Plan-Mode** (read-only). Das ist über `.claude/settings.json` erzwungen — der Agent darf erst implementieren, nachdem der Plan bestätigt wurde.
+
 Jede Implementierungs-Session wird über den Skill `/session` gestartet:
 
 ```
@@ -32,11 +34,58 @@ Falls kein `/session`-Aufruf erfolgt, gelten die Schritte trotzdem als Pflicht �
 Für jeden Use Case wird die zugehörige `docs/by-use-case/{uc}.md` Datei gelesen und die Pipeline in dieser Reihenfolge abgearbeitet:
 
 1. **Backend implementieren** — Abschnitte 1–3 (Use Case, API-Contract, Backend-Architektur)
-2. **Backend-QA** — Abschnitt 4 (Tests über curl und tinker)
+2. **Backend-QA** — `/backend-qa {uc}` ausführen (Abschnitt 4)
 3. **Frontend implementieren** — Abschnitte 5–8 (Frontend-Architektur, Screen-Flow, UI-Regeln, Stitch-Prompt)
-4. **Frontend-QA** — Abschnitt 9 (Tests über Playwright MCP)
+4. **Frontend-QA** — `/frontend-qa {uc}` ausführen (Abschnitt 9)
 
 Kein Abschnitt darf übersprungen werden. Bei Kontextfülle: `/clear` und mit dem nächsten UC weitermachen.
+
+---
+
+## QA-Subagenten und Nachbesserungsregel
+
+### Aufruf
+
+Die QA-Phasen werden über dedizierte Subagenten ausgeführt:
+
+- `/backend-qa {uc}` — testet API-Endpunkte via curl und Datenbankzustand via tinker
+- `/frontend-qa {uc}` — testet UI-Verhalten via Playwright MCP
+
+Beide Subagenten sind **read-only**: sie testen und berichten, ändern aber keinen Code. Der Hauptagent erhält einen strukturierten Bericht und entscheidet über Nachbesserungen.
+
+### Nachbesserungsloop (PFLICHT)
+
+Wenn ein QA-Subagent Fehler meldet:
+
+1. **Analysiere** den Bericht — identifiziere betroffene Datei und Ursache
+2. **Behebe** den Fehler im Code
+3. **Starte** den QA-Subagenten erneut
+4. **Wiederhole** bis alle Tests grün sind — **maximal 3 Versuche**
+5. Nach 3 fehlgeschlagenen Versuchen: **stoppe und frage den Benutzer**
+
+Ein Versuch zählt nur, wenn eine **gezielte Code-Änderung** auf Basis des QA-Berichts gemacht wurde. Ein bloßer Re-Run ohne Änderung zählt nicht als Versuch und ist nicht erlaubt.
+
+### Stopp-Bericht nach 3 Versuchen
+
+Wenn nach 3 Versuchen noch Fehler bestehen, melde dem Benutzer:
+
+- Welcher Test fehlschlägt
+- Betroffene Datei und Zeile
+- Was in jedem Versuch geändert wurde
+- Mögliche Ursache (z.B. Architekturentscheidung nötig, ER-Modell-Widerspruch)
+- Vorschlag für weiteres Vorgehen
+
+Die 3-Versuch-Grenze verhindert Endlosschleifen bei strukturellen Fehlern, die eine Architekturentscheidung des Benutzers erfordern.
+
+### Frontend-QA: Fehlerklassifikation beachten
+
+Der frontend-qa Subagent klassifiziert Fehler in drei Typen:
+
+- **Typ A: UI-Fehler** — Element fehlt, falscher State, Navigation kaputt → vom Hauptagent behebbar
+- **Typ B: Infrastruktur** — Backend/Frontend nicht erreichbar, CORS, Timeout → KEIN UI-Fehler, keine Vue-Änderung
+- **Typ C: Backend-Logik** — API gibt falsche Daten/Status → erfordert Backend-Änderung, nicht Frontend
+
+Nur bei **Typ A** darf der Hauptagent Vue-Komponenten oder Store-Dateien ändern. Bei Typ B und C muss zuerst die Ursache behoben werden.
 
 ---
 
