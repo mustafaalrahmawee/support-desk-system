@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - complementary [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e7]
+        - heading "Support Desk" [level=1] [ref=e12]:
+          - text: Support
+          - text: Desk
+        - paragraph [ref=e13]: Internes Agentensystem
+        - list [ref=e15]:
+          - listitem [ref=e16]: Ticket-Management
+          - listitem [ref=e18]: Kundenhistorie
+          - listitem [ref=e20]: Rollenbasierter Zugriff
+      - paragraph [ref=e22]: v1.0 · Internes System
+    - main [ref=e23]:
+      - generic [ref=e24]:
+        - paragraph [ref=e25]: ANMELDUNG
+        - heading "Willkommen zurück" [level=2] [ref=e26]
+        - paragraph [ref=e27]: Melden Sie sich mit Ihren Zugangsdaten an.
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - generic [ref=e30]: E-Mail-Adresse
+            - textbox "E-Mail-Adresse" [ref=e31]:
+              - /placeholder: agent@example.com
+          - generic [ref=e32]:
+            - generic [ref=e33]: Passwort
+            - generic [ref=e34]:
+              - textbox "Passwort" [ref=e35]:
+                - /placeholder: ••••••••
+              - button "Passwort anzeigen" [ref=e36]:
+                - img [ref=e37]
+          - button "Anmelden" [ref=e40]
+        - paragraph [ref=e41]: Probleme mit dem Zugang? Wenden Sie sich an den Administrator.
+  - generic [ref=e42]:
+    - generic "Toggle devtools panel" [ref=e43] [cursor=pointer]:
+      - img [ref=e44]
+    - generic "Toggle Component Inspector" [ref=e49] [cursor=pointer]:
+      - img [ref=e50]

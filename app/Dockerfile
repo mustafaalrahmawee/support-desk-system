@@ -25,4 +25,7 @@ COPY . .
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# npm install wird bei jedem Container-Start ausgeführt.
+# So werden neue Pakete (aus dem gemounteten package.json) automatisch
+# installiert — kein docker build nötig.
+CMD ["sh", "-c", "npm install && npm run dev -- --host 0.0.0.0"]

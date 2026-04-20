@@ -1,0 +1,17 @@
+- generic [active]:
+  - generic "Toggle devtools panel" [ref=e2] [cursor=pointer]:
+    - img [ref=e3]
+  - generic [ref=e9]:
+    - generic [ref=e10]: "[plugin:vite:import-analysis] Failed to resolve import \"ofetch\" from \"src/stores/auth.store.js\". Does the file exist?"
+    - generic [ref=e11]: /app/src/stores/auth.store.js:3:24
+    - generic [ref=e12]: "1 | import { defineStore } from 'pinia' 2 | import { ref, computed } from 'vue' 3 | import { $fetch } from 'ofetch' | ^ 4 | 5 | const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'"
+    - generic [ref=e13]: at TransformPluginContext._formatLog (file:///app/node_modules/vite/dist/node/chunks/node.js:30354:39) at TransformPluginContext.error (file:///app/node_modules/vite/dist/node/chunks/node.js:30351:14) at normalizeUrl (file:///app/node_modules/vite/dist/node/chunks/node.js:27633:18) at async file:///app/node_modules/vite/dist/node/chunks/node.js:27696:30 at async Promise.all (index 2) at async TransformPluginContext.transform (file:///app/node_modules/vite/dist/node/chunks/node.js:27664:4) at async file:///app/node_modules/vite-plugin-vue-devtools/node_modules/vite-plugin-inspect/dist/shared/vite-plugin-inspect.BzUKaD4x.mjs:403:17 at async EnvironmentPluginContainer.transform (file:///app/node_modules/vite/dist/node/chunks/node.js:30143:14) at async loadAndTransform (file:///app/node_modules/vite/dist/node/chunks/node.js:24468:26) at async viteTransformMiddleware (file:///app/node_modules/vite/dist/node/chunks/node.js:24262:20)
+    - generic [ref=e14]:
+      - text: Click outside, press Esc key, or fix the code to dismiss.
+      - text: You can also disable this overlay by setting
+      - code [ref=e15]: server.hmr.overlay
+      - text: to
+      - code [ref=e16]: "false"
+      - text: in
+      - code [ref=e17]: vite.config.js
+      - text: .
