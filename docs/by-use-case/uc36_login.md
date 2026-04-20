@@ -32,14 +32,17 @@ Ein interner Benutzer meldet sich am System an.
 ### Alternativabläufe / Fehlerfälle
 
 #### A1: Formale Eingabe ungültig
+
 - Der Login wird nicht ausgeführt.
 - Das System liefert einen Validierungsfehler.
 
 #### A2: Zugangsdaten ungültig
+
 - Der Login schlägt fehl.
 - Das System liefert `401 Unauthenticated`.
 
 #### A3: Benutzer deaktiviert oder nicht aktiv
+
 - Die Anmeldung wird verweigert.
 - Das System liefert `403 Forbidden`.
 
@@ -73,6 +76,7 @@ Ein interner Benutzer meldet sich am System an.
 ### Success Response
 
 #### HTTP Status
+
 - `200 OK`
 
 #### Beispiel Response

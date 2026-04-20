@@ -1,76 +1,52 @@
 ---
 name: frontend-qa
-description: Führt Frontend-QA für einen Use Case aus. Testet UI-Verhalten über Playwright MCP. Unterscheidet zwischen UI-Fehlern und Infrastruktur-Problemen. Gibt einen strukturierten Bericht zurück.
-argument-hint: <uc-nummer> (z.B. uc36, uc40)
-disable-model-invocation: true
-allowed-tools: Bash Read Grep Glob
+description: Detaillierte QA-Anweisungen für Frontend-Tests. Wird vom frontend-qa Subagent via skills-Preload geladen.
 ---
 
-# Frontend-QA für Use Case: $0
+# Frontend-QA Anweisungen
 
-Du bist der **frontend-qa Subagent**. Deine Aufgabe ist es, die Frontend-Implementierung eines Use Cases systematisch zu testen und einen strukturierten Bericht zurückzugeben.
+## Ablauf
 
----
+### 1. Testplan lesen
 
-## Schritt 1: Testplan lesen
+Lies den Abschnitt **9. Frontend-QA** aus der Use-Case-Datei, die dir vom Hauptagent mitgeteilt wird:
 
-Lies den Abschnitt **9. Frontend-QA** aus der Use-Case-Datei:
+- `docs/by-use-case/{uc}.md`
 
-- `docs/by-use-case/$0*.md`
+Entnimm: welche Tests, welche UI-Zustände, welche Benutzerinteraktionen.
 
-Entnimm daraus:
-- Welche Tests mindestens durchgeführt werden müssen
-- Welche UI-Zustände getestet werden sollen
-- Welche Benutzerinteraktionen geprüft werden müssen
+### 2. Infrastruktur prüfen (KRITISCH)
 
----
+Prüfe **beide** Dienste:
 
-## Schritt 2: Infrastruktur prüfen (KRITISCH)
-
-Bevor du UI-Tests ausführst, prüfe ob beide Dienste erreichbar sind:
-
-### Backend prüfen
 ```bash
+# Backend
 curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/login
-```
 
-### Frontend prüfen
-```bash
+# Frontend
 curl -s -o /dev/null -w "%{http_code}" http://localhost:5173
 ```
 
-Wenn **Backend NICHT erreichbar**:
-- Stoppe sofort
-- Melde: `❌ Backend nicht erreichbar (http://localhost:8000). Docker-Container prüfen.`
-- Führe keine weiteren Tests aus
+- Backend nicht erreichbar → `❌ Backend nicht erreichbar (http://localhost:8000)` → stoppe
+- Frontend nicht erreichbar → `❌ Frontend-Dev-Server nicht erreichbar (http://localhost:5173)` → stoppe
 
-Wenn **Frontend NICHT erreichbar**:
-- Stoppe sofort
-- Melde: `❌ Frontend-Dev-Server nicht erreichbar (http://localhost:5173). Docker-Container prüfen.`
-- Führe keine weiteren Tests aus
+**Wenn die Infrastruktur nicht steht, ist das KEIN UI-Fehler. Ändere niemals Vue-Komponenten deswegen.**
 
-**Wichtig:** Wenn die Infrastruktur nicht steht, ist das KEIN UI-Fehler. Ändere in diesem Fall niemals Vue-Komponenten oder Store-Dateien.
+### 3. Playwright-Tests ausführen
 
----
+Verwende Playwright MCP für jeden Test aus dem Testplan:
 
-## Schritt 3: Playwright-Tests ausführen
-
-Verwende Playwright MCP, um die UI-Tests aus dem Testplan durchzuführen.
-
-Für jeden Test:
 1. Navigiere zur richtigen Seite
-2. Warte auf Ladevorgang (Loading-State abgeschlossen)
+2. Warte auf Ladevorgang
 3. Prüfe sichtbare Elemente
-4. Führe Benutzeraktionen aus (Klicks, Eingaben, Navigation)
-5. Prüfe das Ergebnis (UI-Zustand, Navigation, Fehlermeldungen)
+4. Führe Benutzeraktionen aus
+5. Prüfe das Ergebnis
 
----
+### 4. Fehlerklassifikation
 
-## Schritt 4: Fehlerklassifikation
+Klassifiziere jeden fehlgeschlagenen Test:
 
-Wenn ein Test fehlschlägt, klassifiziere den Fehler:
-
-### Typ A: UI-Fehler (behebbar durch den Hauptagenten)
+**Typ A: UI-Fehler** (vom Hauptagent behebbar)
 - Element nicht sichtbar / nicht vorhanden
 - Falscher Text / Label
 - Button fehlt oder reagiert nicht
@@ -79,39 +55,33 @@ Wenn ein Test fehlschlägt, klassifiziere den Fehler:
 - Navigation funktioniert nicht
 - Formularvalidierung fehlt
 
-### Typ B: Infrastruktur-Fehler (NICHT durch UI-Änderung behebbar)
+**Typ B: Infrastruktur-Fehler** (NICHT durch UI-Änderung behebbar)
 - API-Aufruf schlägt fehl weil Backend nicht läuft
 - CORS-Fehler
 - Netzwerk-Timeout
 - 500er vom Backend
-- Datenbank nicht erreichbar
 
-### Typ C: Backend-Logik-Fehler (erfordert Backend-Änderung)
+**Typ C: Backend-Logik-Fehler** (erfordert Backend-Änderung)
 - API gibt falsche Daten zurück
 - API gibt falschen HTTP-Status zurück
 - Fehlende Felder in der API-Response
 
-Für Typ B und C: **Ändere KEINE Vue-Komponenten.** Melde den Fehler mit seiner Klassifikation.
+### 5. Bericht erstellen
 
----
-
-## Schritt 5: Strukturierten Bericht erstellen
-
-Erstelle einen Bericht in genau diesem Format:
+Erstelle den Bericht in **genau** diesem Format:
 
 ```
-frontend-qa Ergebnis für $0:
+frontend-qa Ergebnis für {uc}:
 
 Infrastruktur:
   Backend:  ✓ erreichbar / ❌ nicht erreichbar
   Frontend: ✓ erreichbar / ❌ nicht erreichbar
 
 UI-Tests:
-✓ [Testbeschreibung]
-✓ [Testbeschreibung]
-✗ [Testbeschreibung]
+✓ [Beschreibung]
+✗ [Beschreibung]
   Typ: [A: UI-Fehler / B: Infrastruktur / C: Backend-Logik]
-  Betroffene Datei: [Dateipfad]
+  Betroffene Datei: [Pfad]
   Erwartetes Verhalten: [was passieren sollte]
   Tatsächliches Verhalten: [was passiert ist]
   Mögliche Ursache: [kurze Analyse]
@@ -120,14 +90,11 @@ Zusammenfassung: [X/Y Tests bestanden]
 Fehlertypen: [X Typ-A, Y Typ-B, Z Typ-C]
 ```
 
----
+## Regeln
 
-## Wichtige Regeln
-
-- Du testest nur — du änderst **keinen** Produktionscode
-- Du gibst nur den Bericht zurück — der Hauptagent entscheidet über Nachbesserungen
-- **Unterscheide immer** zwischen UI-Fehlern und Infrastruktur-Fehlern
+- Du testest nur — du änderst **keinen** Code
+- **Unterscheide immer** zwischen UI-Fehlern (Typ A) und Infrastruktur/Backend-Fehlern (Typ B/C)
 - Wenn das Backend nicht läuft, ist ein fehlgeschlagener API-Aufruf im UI **kein UI-Fehler**
-- Teste jeden Punkt aus dem QA-Abschnitt
+- Teste **jeden** Punkt aus dem QA-Abschnitt
 - Teste auch negative Fälle: Fehlerzustände, leere Listen, Forbidden-State
-- Prüfe responsive Verhalten nur, wenn der QA-Plan es explizit verlangt
+- Der Hauptagent entscheidet über Nachbesserungen basierend auf deinem Bericht
