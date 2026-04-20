@@ -1,7 +1,5 @@
 # UC 41 – Internen Benutzer anlegen
 
-> Die API-Contracts in diesem Dokument sind aus den ursprünglichen Master-Dateien abgeleitet. Bei Widersprüchen gilt `docs/domain/`.
-
 ## 1. Use Case
 
 ### Ziel
@@ -288,10 +286,10 @@ Ein Admin legt einen neuen internen Benutzer mit Stammdaten und Rollenzuordnung 
 
 ---
 
-## 8. Stitch-Prompt
+## 8. Frontend-Design-Prompt
 
 ```text
-Erzeuge mit Claude Code unter Verwendung von Stitch MCP und Google Labs stitch-skills eine Vue.js Screen-Komponente mit Tailwind CSS.
+Erzeuge mit dem Frontend Design Plugin eine Vue.js Screen-Komponente mit Tailwind CSS.
 
 Kontext:
 Dies ist ein Formular zur Neuanlage eines internen Benutzers im Smart Support Desk System.

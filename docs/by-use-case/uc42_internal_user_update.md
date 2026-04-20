@@ -1,7 +1,5 @@
 # UC 42 – Internen Benutzer bearbeiten
 
-> Die API-Contracts in diesem Dokument sind aus den ursprünglichen Master-Dateien abgeleitet. Bei Widersprüchen gilt `docs/domain/`.
-
 ## 1. Use Case
 
 ### Ziel
@@ -290,10 +288,10 @@ Alle Felder sind optional (PATCH-Semantik). Nur übermittelte Felder werden geä
 
 ---
 
-## 8. Stitch-Prompt
+## 8. Frontend-Design-Prompt
 
 ```text
-Erzeuge mit Claude Code unter Verwendung von Stitch MCP und Google Labs stitch-skills eine Vue.js Screen-Komponente mit Tailwind CSS.
+Erzeuge mit dem Frontend Design Plugin eine Vue.js Screen-Komponente mit Tailwind CSS.
 
 Kontext:
 Dies ist ein Formular zur Bearbeitung eines bestehenden internen Benutzers im Smart Support Desk System.

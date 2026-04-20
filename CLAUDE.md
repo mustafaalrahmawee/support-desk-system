@@ -35,7 +35,7 @@ Für jeden Use Case wird die zugehörige `docs/by-use-case/{uc}.md` Datei gelese
 
 1. **Backend implementieren** — Abschnitte 1–3 (Use Case, API-Contract, Backend-Architektur). Die `laravel/agent-skills` helfen hier passiv: sie werden automatisch aktiviert, wenn der Hauptagent Laravel-Code schreibt (Models, Actions, Controllers, FormRequests, Policies). Keine manuelle Auslösung nötig.
 2. **Backend-QA** — Subagent `backend-qa` aufrufen mit UC-Datei als Kontext (Abschnitt 4)
-3. **UI-Gerüst erzeugen** — `/stitch-ui {uc}` ausführen (Abschnitt 8 → Stitch MCP → Vue-Komponentengerüst)
+3. **UI-Gerüst erzeugen** — Frontend Design Plugin verwenden (Abschnitt 8 → Vue-Komponentengerüst direkt lokal)
 4. **Frontend vervollständigen** — Store-Anbindung, Validierung, Events ergänzen (Abschnitte 5–7)
 5. **Frontend-QA** — Subagent `frontend-qa` aufrufen mit UC-Datei als Kontext (Abschnitt 9)
 
@@ -115,18 +115,12 @@ Nur bei **Typ A** darf der Hauptagent Vue-Komponenten oder Store-Dateien ändern
 - **Backend:** Laravel 13, PHP 8.4, PostgreSQL 16, Sanctum
 - **Frontend:** Vue.js, Tailwind CSS, Pinia, ofetch, Vuelidate
 - **Infrastruktur:** Docker Compose (API :8000, App :5173, DB :5432)
-- **UI-Erzeugung:** Claude Code + Stitch MCP + Google Labs stitch-skills
+- **UI-Erzeugung:** Claude Code + Frontend Design Plugin (`frontend-design@claude-plugins-official`)
 - **Agent-Skills:** `laravel/agent-skills` Plugin (via `/plugin install laravel@laravel`)
 
 ---
 
 ## Laravel Agent-Skills (Plugin)
-
-Dieses Projekt verwendet das offizielle `laravel/agent-skills` Plugin. Installation:
-
-```
-/plugin install laravel@laravel
-```
 
 ### Wirkungsweise
 

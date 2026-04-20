@@ -21,7 +21,7 @@ Sie beschreibt den technischen Stack, die Architekturprinzipien für Backend und
 ### Frontend
 
 - Vue.js, Tailwind CSS, Pinia, ofetch, Vuelidate
-- UI-Erzeugung: Claude Code + Stitch MCP + Google Labs stitch-skills
+- UI-Erzeugung: Claude Code + Frontend Design Plugin (`frontend-design@claude-plugins-official`)
 - QA: Claude Code Subagent (`frontend-qa`) über Playwright MCP
 - Container: Docker (`support_desk_app`)
 
@@ -66,7 +66,7 @@ docs/
 
 **`by-domain/`** — Koordinator. Beschreibt welche Use Cases zu einer Domain gehören, in welcher Reihenfolge sie implementiert werden, welche Abhängigkeiten bestehen, welche gemeinsamen Bausteine existieren und welche Session-Bundles sinnvoll sind. Enthält keine Pipeline selbst.
 
-**`by-use-case/`** — Pipeline-Träger. Jede Datei beschreibt die komplette Pipeline für einen Use Case in 9 Abschnitten: Use Case → API-Contract → Backend-Architektur → Backend-QA → Frontend-Architektur → Screen-Flow → UI-Regeln → Stitch-Prompt → Frontend-QA. Eine Datei, ein Use Case, ein vollständiger Durchlauf.
+**`by-use-case/`** — Pipeline-Träger. Jede Datei beschreibt die komplette Pipeline für einen Use Case in 9 Abschnitten: Use Case → API-Contract → Backend-Architektur → Backend-QA → Frontend-Architektur → Screen-Flow → UI-Regeln → Frontend-Design-Prompt → Frontend-QA. Eine Datei, ein Use Case, ein vollständiger Durchlauf.
 
 ### Warum diese Struktur?
 
@@ -205,9 +205,9 @@ src/
   validators/
 ```
 
-### UI-Erzeugung: Stitch-Workflow
+### UI-Erzeugung: Frontend Design Plugin
 
-Claude Code + Stitch MCP + stitch-skills ist der verbindliche Workflow zur UI-Erzeugung. Der Workflow erzeugt UI-Struktur, keine Fachlogik.
+Das `frontend-design` Plugin ist der verbindliche Workflow zur UI-Erzeugung. Der Workflow erzeugt UI-Struktur lokal, keine Fachlogik, kein externer Dienst.
 
 ### UI-Regeln
 
@@ -240,8 +240,8 @@ Screen-Name, sichtbare Hauptbereiche, Benutzeraktionen, erwartete Frontend-Logik
 ### Abschnitt 7: UI-Regeln
 Visuelle Muster für diesen Screen-Bereich.
 
-### Abschnitt 8: Stitch-Prompt
-Vorbereiteter Prompt für die UI-Erzeugung über Claude Code + Stitch MCP.
+### Abschnitt 8: Frontend-Design-Prompt
+Vorbereiteter Prompt für die UI-Erzeugung über das Frontend Design Plugin.
 
 ### Abschnitt 9: Frontend-QA
 Welche Tests der `frontend-qa` Subagent über Playwright MCP ausführen soll.
@@ -293,7 +293,7 @@ Domain-Dateien enthalten keine Pipeline. Die Pipeline lebt in den `by-use-case/`
    a. docs/by-use-case/{uc}.md öffnen
    b. Phase 1: Backend implementieren (Abschnitte 1–3)
    c. Phase 1b: backend-qa Subagent ausführen (Abschnitt 4)
-   d. Phase 2: Frontend implementieren (Abschnitte 5–8)
+   d. Phase 2: Frontend implementieren (Abschnitte 5–8, UI-Gerüst via Frontend Design Plugin)
    e. Phase 2b: frontend-qa Subagent ausführen (Abschnitt 9)
 4. Bei Kontextfülle: /clear und mit nächstem UC weitermachen
 ```
@@ -323,7 +323,7 @@ Domain-Dateien enthalten keine Pipeline. Die Pipeline lebt in den `by-use-case/`
 
 ### Frontend
 - UI-Screen ohne Use-Case-Bezug
-- Business Rules aus Stitch-Output ableiten
+- Business Rules aus dem UI-Gerüst ableiten
 - Rollenlogik im UI-Code erfinden
 - Statusregeln im Frontend definieren
 - Store-Architektur aus Intuition statt aus API-Contracts

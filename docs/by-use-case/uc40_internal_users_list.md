@@ -1,7 +1,5 @@
 # UC 40 – Interne Benutzer auflisten
 
-> Die API-Contracts in diesem Dokument sind aus den ursprünglichen Master-Dateien abgeleitet. Bei Widersprüchen gilt `docs/domain/`.
-
 ## 1. Use Case
 
 ### Ziel
@@ -233,10 +231,10 @@ Ein Admin ruft eine Liste aller internen Benutzer ab.
 
 ---
 
-## 8. Stitch-Prompt
+## 8. Frontend-Design-Prompt
 
 ```text
-Erzeuge mit Claude Code unter Verwendung von Stitch MCP und Google Labs stitch-skills eine Vue.js Screen-Komponente mit Tailwind CSS.
+Erzeuge mit dem Frontend Design Plugin eine Vue.js Screen-Komponente mit Tailwind CSS.
 
 Kontext:
 Dies ist die Benutzerübersicht für die administrative Verwaltung interner Benutzer im Smart Support Desk System.

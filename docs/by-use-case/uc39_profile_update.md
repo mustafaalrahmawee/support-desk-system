@@ -1,7 +1,5 @@
 # UC 39 – Profil bearbeiten
 
-> Die API-Contracts in diesem Dokument sind aus den ursprünglichen Master-Dateien übernommen. Bei Widersprüchen gilt `docs/domain/`.
-
 ## 1. Use Case
 
 ### Ziel
@@ -212,10 +210,10 @@ Zusätzliche UI-relevante Fehlerfälle aus den Master-Dateien:
 
 ---
 
-## 8. Stitch-Prompt
+## 8. Frontend-Design-Prompt
 
 ```text
-Erzeuge mit Claude Code unter Verwendung von Stitch MCP und Google Labs stitch-skills eine Vue.js Screen-Komponente mit Tailwind CSS.
+Erzeuge mit dem Frontend Design Plugin eine Vue.js Screen-Komponente mit Tailwind CSS.
 
 Kontext:
 Dies ist ein Screen zum Bearbeiten des eigenen Profils im Smart Support Desk System.

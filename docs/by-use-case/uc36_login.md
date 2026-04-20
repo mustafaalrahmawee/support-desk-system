@@ -1,7 +1,5 @@
 # UC 36 – Login
 
-> Die API-Contracts in diesem Dokument sind aus den ursprünglichen Master-Dateien übernommen. Bei Widersprüchen gilt `docs/domain/`.
-
 ## 1. Use Case
 
 ### Ziel
@@ -259,10 +257,10 @@ Ein interner Benutzer meldet sich am System an.
 
 ---
 
-## 8. Stitch-Prompt
+## 8. Frontend-Design-Prompt
 
 ```text
-Erzeuge mit Claude Code unter Verwendung von Stitch MCP und Google Labs stitch-skills eine Vue.js Screen-Komponente mit Tailwind CSS.
+Erzeuge mit dem Frontend Design Plugin eine Vue.js Screen-Komponente mit Tailwind CSS.
 
 Kontext:
 Dies ist ein Login-Screen für das Smart Support Desk System.

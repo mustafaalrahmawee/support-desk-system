@@ -1,7 +1,5 @@
 # UC 43 – Internen Benutzer deaktivieren
 
-> Die API-Contracts in diesem Dokument sind aus den ursprünglichen Master-Dateien abgeleitet. Bei Widersprüchen gilt `docs/domain/`.
-
 ## 1. Use Case
 
 ### Ziel
@@ -227,10 +225,10 @@ Ein Admin deaktiviert einen internen Benutzer (Soft Delete). Dabei werden abhän
 
 ---
 
-## 8. Stitch-Prompt
+## 8. Frontend-Design-Prompt
 
 ```text
-Erzeuge mit Claude Code unter Verwendung von Stitch MCP und Google Labs stitch-skills eine Vue.js Bestätigungsdialog-Komponente mit Tailwind CSS.
+Erzeuge mit dem Frontend Design Plugin eine Vue.js Bestätigungsdialog-Komponente mit Tailwind CSS.
 
 Kontext:
 Dies ist ein Bestätigungsdialog für die Deaktivierung eines internen Benutzers im Smart Support Desk System.

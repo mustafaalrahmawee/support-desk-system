@@ -85,7 +85,7 @@ Für jeden UC im bestätigten Plan:
 1. `docs/by-use-case/{uc}.md` lesen
 2. **Backend implementieren** — Abschnitte 1–3. Die `laravel/agent-skills` helfen hier passiv (Eloquent, Actions, FormRequests, Policies). Keine manuelle Auslösung nötig — bei Widersprüchen gilt immer die Projektdokumentation (`docs/`).
 3. **Backend-QA** — Subagent `backend-qa` aufrufen (Kontext: UC-Nummer + Dateipfad) → Bericht erhalten → Nachbesserungsloop
-4. **UI-Gerüst erzeugen** — `/stitch-ui {uc}` ausführen → Vue-Komponentengerüst aus Abschnitt 8
+4. **UI-Gerüst erzeugen** — Frontend Design Plugin verwenden → Vue-Komponentengerüst aus Abschnitt 8 (Prompt direkt an das Plugin übergeben, kein externer Dienst)
 5. **Frontend vervollständigen** — Store-Anbindung, Validierung, Events ergänzen (Abschnitte 5–7)
 6. **Frontend-QA** — Subagent `frontend-qa` aufrufen (Kontext: UC-Nummer + Dateipfad) → Bericht erhalten → Nachbesserungsloop
 

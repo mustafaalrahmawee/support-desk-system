@@ -1,7 +1,5 @@
 # UC 37 – Logout
 
-> Die API-Contracts in diesem Dokument sind aus den ursprünglichen Master-Dateien übernommen. Bei Widersprüchen gilt `docs/domain/`.
-
 ## 1. Use Case
 
 ### Ziel
@@ -168,10 +166,10 @@ Ein authentifizierter interner Benutzer meldet sich vom System ab.
 
 ---
 
-## 8. Stitch-Prompt
+## 8. Frontend-Design-Prompt
 
 ```text
-Erzeuge mit Claude Code unter Verwendung von Stitch MCP und Google Labs stitch-skills eine kleine Vue.js UI-Struktur mit Tailwind CSS für einen Logout-Flow im Smart Support Desk System.
+Erzeuge mit dem Frontend Design Plugin eine kleine Vue.js UI-Struktur mit Tailwind CSS für einen Logout-Flow im Smart Support Desk System.
 
 Wichtig:
 - Nur UI
