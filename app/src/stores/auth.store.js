@@ -1,23 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { $fetch } from 'ofetch'
+import { useApiFetch } from '@/composables/useApiFetch'
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
-
-function apiFetch(path, options = {}) {
-  const token = localStorage.getItem('auth_token')
-  return $fetch(`${API_BASE}${path}`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-    ...options,
-  })
-}
 
 export const useAuthStore = defineStore('auth', () => {
+  const { apiFetch } = useApiFetch()
   const user = ref(JSON.parse(localStorage.getItem('auth_user') ?? 'null'))
   const token = ref(localStorage.getItem('auth_token') ?? null)
 

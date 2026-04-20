@@ -95,7 +95,7 @@ FormRequest wird VOR dem Controller-Body ausgeführt (Dependency Injection).
 
 **Controller** — dünn halten. Darf nur: Request entgegennehmen, Policy prüfen, eine Action aufrufen, Response zurückgeben. Keine Fachlogik.
 
-**FormRequest** — formale Validierung (Pflichtfelder, Formate, Enum-Werte, exists, unique). Keine komplexen Fachprüfungen. `authorize()` auf `return true` setzen — Autorisierung über Policy im Controller.
+**FormRequest** — formale Validierung (Pflichtfelder, Formate, Enum-Werte, exists, unique). Keine komplexen Fachprüfungen. `authorize()` auf `return true` setzen — Autorisierung über Policy im Controller. Für benutzernahe Formulare sollen explizite deutsche Validierungsnachrichten über `messages()` definiert werden, damit verständliche Fehlermeldungen ans Frontend geliefert werden.
 
 **Policy** — rollenbasierte Berechtigungen. Welche Rolle was darf, steht in `docs/domain/02_business-rules.md`. Keine Rollen-Zuordnungen erfinden.
 
@@ -184,11 +184,11 @@ Fachlogik kommt aus den Backend-Dokumenten. Das Frontend darf fachliche Regeln n
 
 **Components** — UI-Bausteine, die aus Pages ausgelagert werden, wenn ein Screen zu groß wird oder aus mehreren eigenständigen Blöcken mit eigenen Zuständen besteht. Nicht vorsorglich auslagern — solange eine Page kompakt und übersichtlich bleibt, gehört alles in die Page.
 
-**Stores** — API-nahe Logik pro Fachbereich (Pinia). Minimal nötige Funktionen pro Use Case, nicht alles auf einmal.
+**Stores** — API-nahe Logik pro Fachbereich (Pinia). Minimal nötige Funktionen pro Use Case, nicht alles auf einmal. Stores sollen Requests nicht roh verstreuen, sondern ein gemeinsames API-Composable verwenden.
 
-**Validators** — Vuelidate-Regeln für Formulare.
+**Validators** — Vuelidate-Regeln für Formulare. Vuelidate ist für Formularvalidierung verbindlich; ad-hoc-Validierungslogik statt Vuelidate soll vermieden werden. Backend-Validierungsfehler ergänzen die Frontend-Validierung und müssen im UI sichtbar verarbeitet werden.
 
-**API Client** — zentrale ofetch-Konfiguration.
+**API Client / Composables** — zentrale ofetch-Konfiguration. Für Request-Aufrufe in Stores soll ein gemeinsames `useApiFetch()`-Composable für Base-URL, Header und Token-Handling verwendet werden.
 
 ### Frontend-Ordnerstruktur
 
@@ -212,6 +212,38 @@ Das `frontend-design` Plugin ist der verbindliche Workflow zur UI-Erzeugung. Der
 ### UI-Regeln
 
 Ruhige Admin-, Support- und Prüfoberfläche. Lesbarkeit vor Effekten. Konsistenz vor Einzellösung.
+
+---
+
+### Verbindliches API-Composable
+
+```ts
+import { $fetch } from 'ofetch'
+
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+
+export function useApiFetch() {
+  function apiFetch(path, options = {}) {
+    const token = localStorage.getItem('auth_token')
+
+    return $fetch(`${API_BASE}${path}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+      ...options,
+    })
+  }
+
+  return { apiFetch }
+}
+```
+
+Pinia-Stores sollen dieses Composable verwenden, statt Base-URL-, Header- und Token-Logik mehrfach zu duplizieren.
+
+Formulare sollen mit Tailwind CSS umgesetzt werden. Feldbezogene Backend-Validierungsfehler gehören direkt ans jeweilige Feld, globale Fehler in einen separaten Fehlerbereich.
 
 ---
 
@@ -327,6 +359,10 @@ Domain-Dateien enthalten keine Pipeline. Die Pipeline lebt in den `by-use-case/`
 - Rollenlogik im UI-Code erfinden
 - Statusregeln im Frontend definieren
 - Store-Architektur aus Intuition statt aus API-Contracts
+- Formulare ohne Vuelidate umsetzen
+- Klassisches freies CSS statt Tailwind CSS verwenden, sofern kein dokumentierter Ausnahmefall besteht
+- Backend-Validierungsfehler nicht im UI anzeigen
+- Base-URL-, Header- oder Token-Handling mehrfach direkt in Stores duplizieren statt ein gemeinsames API-Composable zu verwenden
 
 ### Allgemein
 - Fachliche Annahmen erfinden, die nicht in den Docs stehen

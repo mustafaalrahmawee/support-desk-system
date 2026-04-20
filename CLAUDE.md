@@ -146,6 +146,7 @@ Wenn ein Laravel Agent-Skill eine andere Konvention empfiehlt als unsere Projekt
 - Eine Action pro Use Case mit `execute()` als einzige öffentliche Methode
 - `DB::transaction()` für atomare Operationen
 - Laravel 13 Attribute: `#[Fillable([...])]`, `#[Hidden([...])]`, `#[Table('...')]`
+- FormRequests sollen für benutzernahe Formulare neben `rules()` auch explizite deutsche Validierungsnachrichten über `messages()` liefern
 - Fachliche Exceptions statt generischer
 - Audit innerhalb der Action auslösen
 
@@ -155,19 +156,60 @@ Wenn ein Laravel Agent-Skill eine andere Konvention empfiehlt als unsere Projekt
 - Pages = vollständige Screens, Use-Case-orientiert
 - Stores = API-nahe Logik pro Fachbereich (Pinia)
 - Komponenten nur auslagern, wenn Page aus mehreren eigenständigen Blöcken besteht
+- Formulare verpflichtend mit Vuelidate validieren, nicht mit ad-hoc-Validierungslogik
+- Tailwind CSS für Pages und Komponenten verwenden, sofern kein dokumentierter Ausnahmefall besteht
+- Backend-Validierungsfehler im UI sichtbar machen: Feldfehler am Feld, globale Fehler in separatem Bereich
+- Pinia-Stores sollen Request-Aufrufe über ein gemeinsames `useApiFetch()`-Composable auf Basis von `ofetch` kapseln
 - Keine Rollen- oder Statuslogik im Frontend erfinden
 
 ---
+
+
+
+## Verbindliches API-Composable
+
+Für Request-Aufrufe in Pinia-Stores ist folgende Struktur zu verwenden:
+
+```ts
+import { $fetch } from 'ofetch'
+
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+
+export function useApiFetch() {
+  function apiFetch(path, options = {}) {
+    const token = localStorage.getItem('auth_token')
+
+    return $fetch(`${API_BASE}${path}`, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+      ...options,
+    })
+  }
+
+  return { apiFetch }
+}
+```
+
+Base-URL-, Header- und Token-Handling sollen nicht mehrfach direkt in verschiedenen Stores dupliziert werden.
 
 ## Verbotene Muster
 
 - Fachlogik im Controller
 - `protected $fillable` statt Attribute
 - `Request $request` statt typisierter FormRequest
+- FormRequest ohne deutsche benutzernahe Validierungsnachrichten bei Formular-Use-Cases
 - Rollenabfragen quer im Code statt in Policies
 - Audit vergessen bei fachlich relevanten Änderungen
 - Fehlende Transaktion bei zusammenhängenden Operationen
 - UI-Screen ohne Use-Case-Bezug
+- Formulare ohne Vuelidate
+- Klassisches freies CSS statt Tailwind CSS ohne dokumentierten Ausnahmefall
+- Backend-Validierungsfehler im UI unterschlagen
+- Rohe Request-Logik direkt in mehreren Stores duplizieren statt `useApiFetch()` zu verwenden
 - Fachliche Annahmen erfinden, die nicht in den Docs stehen
 - Felder, Enum-Werte oder Rollen-Zuordnungen raten
 
