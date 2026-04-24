@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\InternalUser;
-
 return [
 
     /*
@@ -64,7 +62,6 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', InternalUser::class),
         ],
 
         // 'users' => [
