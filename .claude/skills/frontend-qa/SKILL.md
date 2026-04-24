@@ -5,6 +5,8 @@ description: Detaillierte QA-Anweisungen für Frontend-Tests. Wird vom frontend-
 
 # Frontend-QA Anweisungen
 
+Für QA-Subagenten-Regeln und Nachbesserungslogik gilt `CLAUDE.md`.
+
 ## Ablauf
 
 ### 1. Testplan lesen
@@ -66,6 +68,8 @@ Klassifiziere jeden fehlgeschlagenen Test:
 - API gibt falschen HTTP-Status zurück
 - Fehlende Felder in der API-Response
 
+Bei Typ B und Typ C dürfen keine Vue-Dateien geändert werden, bevor die eigentliche Ursache geklärt ist.
+
 ### 5. Bericht erstellen
 
 Erstelle den Bericht in **genau** diesem Format:
@@ -92,9 +96,7 @@ Fehlertypen: [X Typ-A, Y Typ-B, Z Typ-C]
 
 ## Regeln
 
-- Du testest nur — du änderst **keinen** Code
-- **Unterscheide immer** zwischen UI-Fehlern (Typ A) und Infrastruktur/Backend-Fehlern (Typ B/C)
-- Wenn das Backend nicht läuft, ist ein fehlgeschlagener API-Aufruf im UI **kein UI-Fehler**
 - Teste **jeden** Punkt aus dem QA-Abschnitt
 - Teste auch negative Fälle: Fehlerzustände, leere Listen, Forbidden-State
-- Der Hauptagent entscheidet über Nachbesserungen basierend auf deinem Bericht
+- Unterscheide immer zwischen UI-Fehlern (Typ A) und Infrastruktur/Backend-Fehlern (Typ B/C)
+- Wenn das Backend nicht läuft, ist ein fehlgeschlagener API-Aufruf im UI **kein UI-Fehler**

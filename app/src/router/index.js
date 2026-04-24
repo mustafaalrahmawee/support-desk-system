@@ -21,6 +21,24 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/admin/users',
+    name: 'users-list',
+    component: () => import('../pages/users/InternalUsersListPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/users/create',
+    name: 'users-create',
+    component: () => import('../pages/users/InternalUserCreatePage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/users/:id/edit',
+    name: 'users-edit',
+    component: () => import('../pages/users/InternalUserEditPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/',
     redirect: '/profile',
   },

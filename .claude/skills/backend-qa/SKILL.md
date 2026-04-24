@@ -3,81 +3,174 @@ name: backend-qa
 description: Detaillierte QA-Anweisungen für Backend-Tests. Wird vom backend-qa Subagent via skills-Preload geladen.
 ---
 
-# Backend-QA Anweisungen
+# backend-qa
 
-## Ablauf
+## Zweck
 
-### 1. Testplan lesen
+Strukturierte Backend-QA für eine vollständige Domain.
 
-Lies den Abschnitt **4. Backend-QA** aus der Use-Case-Datei, die dir vom Hauptagent mitgeteilt wird:
+Der Skill arbeitet Human-in-the-loop:
 
+1. Der Hauptagent beendet die Backend-Implementierung einer Domain.
+2. Dieser Skill erzeugt genau eine QA-Datei für die gesamte Domain.
+3. Der Benutzer führt die Tests manuell aus und trägt Ergebnisse ein.
+4. Der Skill wertet ausschließlich belegte Ergebnisse aus.
+5. Der Skill liefert dem Hauptagenten eine kompakte Zusammenfassung.
+
+Für QA-Subagenten-Regeln und Nachbesserungslogik gilt `CLAUDE.md`.
+
+---
+
+## Geltungsbereich
+
+Dieser Skill ist für Backend-QA nach Abschluss einer Backend-Domain gedacht.
+
+Er wird nicht pro einzelner Controller-Datei und nicht für spontane Einzelprüfungen ohne dokumentierten Domain-Kontext verwendet.
+
+---
+
+## Zielpfad der QA-Datei
+
+`docs/qa/backend/{domain}.md`
+
+Beispiele: `auth.md`, `users.md`, `customers.md`, `tickets.md`
+
+Falls die Datei bereits existiert: bestehende Benutzerergebnisse respektieren, nur ergänzen oder präzisieren, nicht blind überschreiben.
+
+---
+
+## Arbeitsmodus
+
+### Phase 1: QA-Datei erzeugen
+
+Nach Abschluss einer Backend-Domain:
+
+1. `docs/domain/01_miniworld.md`, `02_business-rules.md`, `03_er.md` lesen
+2. `docs/by-domain/{domain}.md` lesen
+3. alle zur Domain gehörenden `docs/by-use-case/{uc}.md` lesen
+4. daraus genau eine QA-Datei für die Domain erzeugen
+
+### Phase 2: Benutzerergebnisse auswerten
+
+Nachdem der Benutzer getestet und Ergebnisse eingetragen hat:
+
+1. nur die vom Benutzer dokumentierten Ergebnisse lesen
+2. jeden Testpunkt bewerten:
+   - `bestanden` — durch Benutzerbeleg klar erfüllt
+   - `fehlgeschlagen` — durch Benutzerbeleg klar verletzt
+   - `blockiert` — Benutzer konnte den Test nicht ausführen
+   - `offen` — kein Ergebnis eingetragen
+3. Soll/Ist-Abweichungen benennen
+4. betroffene Schicht als begründete Vermutung einordnen
+5. kompakten Bericht an den Hauptagenten liefern
+
+Fehlende Informationen dürfen niemals als Erfolg interpretiert werden.
+
+---
+
+## Aufbau der QA-Datei
+
+Die Datei unter `docs/qa/backend/{domain}.md` wird in dieser Struktur erzeugt:
+
+# Backend QA – <Domain>
+
+## Metadaten
+
+- Domain: <domain>
+- Status: vorbereitet
+- Erstellt von: backend-qa
+- Datum: <YYYY-MM-DD>
+
+## Quellen
+
+- `docs/domain/01_miniworld.md`
+- `docs/domain/02_business-rules.md`
+- `docs/domain/03_er.md`
+- `docs/by-domain/{domain}.md`
 - `docs/by-use-case/{uc}.md`
 
-Entnimm: welche Tests, welche HTTP-Status-Codes, welche JSON-Strukturen, welche Datenbankfolgen.
+## Vorbedingungen
 
-### 2. Infrastruktur prüfen
+- API läuft
+- Datenbank läuft
+- benötigte Seed-Daten vorhanden
+- benötigte Rollen vorhanden
+- benötigte Testdaten vorhanden
 
-Prüfe ob das Backend erreichbar ist:
+## Use Cases
 
-```bash
-curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/login
-```
+### <Use-Case-ID> – <Titel>
 
-Wenn **nicht erreichbar**: stoppe sofort, melde `❌ Backend nicht erreichbar (http://localhost:8000)`. Keine weiteren Tests.
+**Ziel**
+<Beschreibung>
 
-### 3. Testdaten vorbereiten
+**Request / Aktion**
+    <curl oder Testbeschreibung>
 
-Verwende `docker exec support_desk_api php artisan tinker --execute="..."` um:
-- Testbenutzer und Testrollen zu prüfen oder anzulegen
-- Authentifizierungstokens für geschützte Endpunkte zu erzeugen
+**Erwartung HTTP**
+- <Status>
 
-### 4. Tests systematisch ausführen
+**Erwartung JSON**
+- <Punkt>
 
-Für jeden Test aus dem Testplan:
-- `curl -s -w "\n%{http_code}" -H "Authorization: Bearer {token}" -H "Content-Type: application/json" ...`
-- Dokumentiere: Beschreibung, curl-Befehl, erwarteter vs. tatsächlicher Status, ✓ oder ✗
+**Erwartung Datenbank**
+- <Punkt>
 
-Teste immer:
-- Happy Path (korrekter Request)
-- RBAC (falsche Rolle → 403, keine Auth → 401)
-- Validierung (fehlende Felder → 422)
-- Audit-Log (wenn UC auditpflichtig)
+**Erwartung Audit**
+- <Punkt>
 
-### 5. Datenbankzustand prüfen
+**Erwartung RBAC**
+- <Punkt>
 
-Für Tests mit Datenbankfolgen (Audit-Log, Actor-Erzeugung, Soft Delete):
+**Benutzerergebnis**
+- Status: offen
+- Notiz: noch nicht getestet
 
-```bash
-docker exec support_desk_api php artisan tinker --execute="..."
-```
+**CLI / Tinker Ergebnis**
+    noch nicht getestet
 
-### 6. Bericht erstellen
+**Skill-Auswertung**
+- noch nicht ausgewertet
 
-Erstelle den Bericht in **genau** diesem Format:
+---
 
-```
-backend-qa Ergebnis für {uc}:
+## Typische Prüfblöcke pro Use Case
 
-Infrastruktur: ✓ Backend erreichbar
+Je nach Use Case sollen insbesondere diese Backend-Aspekte vorbereitet werden:
 
-Tests:
-✓ [Beschreibung] → [HTTP-Status], [Kernaussage]
-✗ [Beschreibung] → Erwartet: [X], Erhalten: [Y]
-  Betroffene Datei: [Pfad]
-  Mögliche Ursache: [kurze Analyse]
+- Success Case
+- Validation Case
+- Unauthorized
+- Forbidden / RBAC
+- Not Found
+- fachlicher Konflikt
+- Datenbankfolge
+- Audit-Log
+- atomare Konsistenz
+- Soft Delete oder Reaktivierung, falls fachlich relevant
 
-Datenbank:
-✓ [Prüfung] → [Ergebnis]
-✗ [Prüfung] → Erwartet: [X], Erhalten: [Y]
-  Betroffene Datei: [Pfad]
-  Mögliche Ursache: [kurze Analyse]
+Nicht jeder Use Case braucht alle Prüfblöcke. Es dürfen nur die fachlich dokumentierten und technisch sinnvollen Prüfblöcke aufgenommen werden.
 
-Zusammenfassung: [X/Y Tests bestanden]
-```
+---
 
-## Regeln
+## Ergebnisbericht an den Hauptagenten
 
-- Du testest nur — du änderst **keinen** Code
-- Bei fehlgeschlagenen Tests: nenne die betroffene Datei und mögliche Ursache
-- Teste **jeden** Punkt aus dem QA-Abschnitt
-- Der Hauptagent entscheidet über Nachbesserungen basierend auf deinem Bericht
+Nach Auswertung liefert der Skill einen kompakten Bericht mit:
+
+- Domain
+- geprüfte Use Cases
+- bestandene, fehlgeschlagene, blockierte Punkte
+- wichtigste Soll/Ist-Abweichungen
+- vermutete betroffene Schicht (z. B. FormRequest, Policy, Action, Response-Struktur, Audit-Service, Transaktion)
+- empfohlene Korrekturrichtung
+
+Der Bericht ist knapp, strukturiert und ausschließlich belegbasiert.
+
+---
+
+## Harte Regeln
+
+- Keine Testergebnisse erfinden
+- Keine fehlenden Ergebnisse als erfolgreich interpretieren
+- Keine zusätzlichen fachlichen Testfälle erfinden, die nicht dokumentiert sind
+- Keine fachliche Wahrheit aus Vermutungen ableiten

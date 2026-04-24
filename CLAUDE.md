@@ -1,226 +1,68 @@
-# Smart Support Desk System — Claude Code Anweisungen
+# Smart Support Desk System — Claude Code Arbeitsanweisung
 
-## Session-Start (PFLICHT)
+## Zweck
 
-Jede Implementierungs-Session startet im **Plan-Mode** (read-only). Das ist über `.claude/settings.json` erzwungen — der Agent darf erst implementieren, nachdem der Plan bestätigt wurde.
+Diese Datei steuert das Arbeitsverhalten des Agents in Implementierungs-Sessions.
 
-Jede Implementierungs-Session wird über den Skill `/session` gestartet:
+Für fachliche Wahrheit, Dokumentstruktur, Leseregeln, Arbeitsablauf und Grundregeln gilt `docs/README.md`.
 
-```
-/session <domain>              → Vollständige Domain implementieren
-/session <domain> <bundle>     → Bestimmtes Session-Bundle implementieren
-```
-
-Beispiele:
-- `/session users` → Users-Domain (UC 40–43)
-- `/session auth bundle-a` → Auth-Grundlage (UC 36 + 37)
-- `/session tickets bundle-b` → Ticket-Bearbeitung
-
-Der Skill führt automatisch die folgenden Schritte aus:
-
-1. **Fachliche Grundlage lesen** — `docs/domain/01_miniworld.md`, `02_business-rules.md`, `03_er.md`
-2. **Architektur lesen** — `docs/README.md`
-3. **Domain-Koordinator lesen** — `docs/by-domain/{domain}.md`
-4. **Plan erstellen** — UCs, Reihenfolge, Abhängigkeiten, betroffene Dateien
-5. **Plan bestätigen lassen** — Nichts implementieren bevor Bestätigung vorliegt
-6. **Pipeline abarbeiten** — Pro UC: Backend → Backend-QA → Frontend → Frontend-QA
-
-Falls kein `/session`-Aufruf erfolgt, gelten die Schritte trotzdem als Pflicht — der Skill automatisiert sie lediglich.
+Diese Datei regelt nur:
+- Session-Start
+- QA-Nutzung
+- zusätzliche technische Arbeitsregeln
 
 ---
 
-## Pipeline pro Use Case
+## Session-Start (Pflicht)
 
-Für jeden Use Case wird die zugehörige `docs/by-use-case/{uc}.md` Datei gelesen und die Pipeline in dieser Reihenfolge abgearbeitet:
+Jede Implementierungs-Session startet im Plan-Mode.
 
-1. **Backend implementieren** — Abschnitte 1–3 (Use Case, API-Contract, Backend-Architektur). Die `laravel/agent-skills` helfen hier passiv: sie werden automatisch aktiviert, wenn der Hauptagent Laravel-Code schreibt (Models, Actions, Controllers, FormRequests, Policies). Keine manuelle Auslösung nötig.
-2. **Backend-QA** — Subagent `backend-qa` aufrufen mit UC-Datei als Kontext (Abschnitt 4)
-3. **UI-Gerüst erzeugen** — Frontend Design Plugin verwenden (Abschnitt 8 → Vue-Komponentengerüst direkt lokal)
-4. **Frontend vervollständigen** — Store-Anbindung, Validierung, Events ergänzen (Abschnitte 5–7)
-5. **Frontend-QA** — Subagent `frontend-qa` aufrufen mit UC-Datei als Kontext (Abschnitt 9)
+Verwendung:
+- `/session <domain>`
+- `/session <domain> <bundle>`
 
-Kein Abschnitt darf übersprungen werden. Bei Kontextfülle: `/clear` und mit dem nächsten UC weitermachen.
+Vor jeder Implementierung gilt:
+1. Plan erstellen
+2. Plan bestätigen lassen
+3. Erst danach implementieren
 
----
-
-## QA-Subagenten und Nachbesserungsregel
-
-### Aufruf
-
-Die QA-Phasen werden über dedizierte Subagenten ausgeführt (definiert in `.claude/agents/`):
-
-- **`backend-qa`** (`.claude/agents/backend-qa.md`) — testet API-Endpunkte via curl und Datenbankzustand via tinker
-- **`frontend-qa`** (`.claude/agents/frontend-qa.md`) — testet UI-Verhalten via Playwright MCP
-
-Aufruf durch den Hauptagent: Starte den jeweiligen Subagent und übergib als Kontext die UC-Nummer und den Pfad zur Use-Case-Datei (`docs/by-use-case/{uc}.md`). Der Subagent liest den zugehörigen QA-Abschnitt selbst.
-
-Beide Subagenten sind **read-only** (Tools: Read, Bash, Grep, Glob — kein Write, kein Edit): sie testen und berichten, ändern aber keinen Code. Der Hauptagent erhält einen strukturierten Bericht und entscheidet über Nachbesserungen.
-
-### Nachbesserungsloop (PFLICHT)
-
-Wenn ein QA-Subagent Fehler meldet:
-
-1. **Analysiere** den Bericht — identifiziere betroffene Datei und Ursache
-2. **Behebe** den Fehler im Code
-3. **Starte** den QA-Subagenten erneut
-4. **Wiederhole** bis alle Tests grün sind — **maximal 3 Versuche**
-5. Nach 3 fehlgeschlagenen Versuchen: **stoppe und frage den Benutzer**
-
-Ein Versuch zählt nur, wenn eine **gezielte Code-Änderung** auf Basis des QA-Berichts gemacht wurde. Ein bloßer Re-Run ohne Änderung zählt nicht als Versuch und ist nicht erlaubt.
-
-### Stopp-Bericht nach 3 Versuchen
-
-Wenn nach 3 Versuchen noch Fehler bestehen, melde dem Benutzer:
-
-- Welcher Test fehlschlägt
-- Betroffene Datei und Zeile
-- Was in jedem Versuch geändert wurde
-- Mögliche Ursache (z.B. Architekturentscheidung nötig, ER-Modell-Widerspruch)
-- Vorschlag für weiteres Vorgehen
-
-Die 3-Versuch-Grenze verhindert Endlosschleifen bei strukturellen Fehlern, die eine Architekturentscheidung des Benutzers erfordern.
-
-### Frontend-QA: Fehlerklassifikation beachten
-
-Der frontend-qa Subagent klassifiziert Fehler in drei Typen:
-
-- **Typ A: UI-Fehler** — Element fehlt, falscher State, Navigation kaputt → vom Hauptagent behebbar
-- **Typ B: Infrastruktur** — Backend/Frontend nicht erreichbar, CORS, Timeout → KEIN UI-Fehler, keine Vue-Änderung
-- **Typ C: Backend-Logik** — API gibt falsche Daten/Status → erfordert Backend-Änderung, nicht Frontend
-
-Nur bei **Typ A** darf der Hauptagent Vue-Komponenten oder Store-Dateien ändern. Bei Typ B und C muss zuerst die Ursache behoben werden.
+Bei Kontextfülle: `/clear` und mit dem nächsten Schritt weitermachen.
 
 ---
 
-## Domains und Use Cases
+## QA-Subagenten
 
-| Domain | Use Cases | Datei |
-|--------|-----------|-------|
-| Auth | UC 36–39 | `docs/by-domain/auth.md` |
-| Users | UC 40–43 | `docs/by-domain/users.md` |
-| Customers | UC 5–10 | `docs/by-domain/customers.md` |
-| Contacts | UC 11–15 | `docs/by-domain/contacts.md` |
-| Contracts | UC 16–21 | `docs/by-domain/contracts.md` |
-| Tickets | UC 22–30 | `docs/by-domain/tickets.md` |
-| Messages | UC 3–4 | `docs/by-domain/messages.md` |
-| Inbound | UC 1–2 | `docs/by-domain/inbound.md` |
-| Categories | UC 31–32 | `docs/by-domain/categories.md` |
-| Media | UC 33 | `docs/by-domain/media.md` |
-| System | UC 34–35 | `docs/by-domain/system.md` |
+- `backend-qa` und `frontend-qa` sind read-only
+- sie testen und berichten
+- sie ändern keinen Code
 
----
+Wenn QA Fehler meldet:
+1. Bericht analysieren
+2. gezielt korrigieren
+3. QA erneut ausführen
+4. maximal 3 gezielte Nachbesserungsversuche
 
-## Technischer Stack
-
-- **Backend:** Laravel 13, PHP 8.4, PostgreSQL 16, Sanctum
-- **Frontend:** Vue.js, Tailwind CSS, Pinia, ofetch, Vuelidate
-- **Infrastruktur:** Docker Compose (API :8000, App :5173, DB :5432)
-- **UI-Erzeugung:** Claude Code + Frontend Design Plugin (`frontend-design@claude-plugins-official`)
-- **Agent-Skills:** `laravel/agent-skills` Plugin (via `/plugin install laravel@laravel`)
+Nach 3 erfolglosen Versuchen:
+- stoppen
+- Benutzer informieren
+- offenen Fehler, Ursache und bisherige Fixes dokumentieren
 
 ---
 
-## Laravel Agent-Skills (Plugin)
+## Frontend-QA Fehlerklassen
 
-### Wirkungsweise
-
-Die Laravel Agent-Skills sind **passive Wissensmodule** — sie werden vom Hauptagent automatisch aktiviert, wenn er Laravel-Code schreibt. Sie liefern Best Practices für Eloquent, Actions, FormRequests, Policies, Pest-Tests und weitere Laravel-Patterns.
-
-### Geltungsbereich
-
-- **Hauptagent:** Nutzt die Skills passiv beim Code-Schreiben (Phase 1: Backend, Phase 4: Frontend-Logik)
-- **QA-Subagenten:** Verwenden die Skills **nicht** — sie schreiben keinen Code, sondern testen nur
-
-### Vorrang bei Widersprüchen
-
-Wenn ein Laravel Agent-Skill eine andere Konvention empfiehlt als unsere Projektdokumentation, gilt **immer** die Projektdokumentation (`docs/`). Die Agent-Skills ergänzen unsere Regeln, ersetzen sie aber nicht.
+- Typ A: UI-Fehler → Frontend darf angepasst werden
+- Typ B: Infrastruktur → keine Vue-Änderung, zuerst Ursache klären
+- Typ C: Backend-Logik → Backend korrigieren, nicht Frontend
 
 ---
 
-## Architektur-Regeln
+## Technische Arbeitsregeln
 
-### Backend
+Zusätzlich zu den Grundregeln in `docs/README.md` gelten:
 
-- Request-Lifecycle: `Route → Middleware → FormRequest → Controller → Policy → Action → Model → Response`
-- Controller dünn halten — keine Fachlogik
-- Eine Action pro Use Case mit `execute()` als einzige öffentliche Methode
-- `DB::transaction()` für atomare Operationen
-- Laravel 13 Attribute: `#[Fillable([...])]`, `#[Hidden([...])]`, `#[Table('...')]`
-- FormRequests sollen für benutzernahe Formulare neben `rules()` auch explizite deutsche Validierungsnachrichten über `messages()` liefern
-- Fachliche Exceptions statt generischer
-- Audit innerhalb der Action auslösen
-
-### Frontend
-
-- Fachlogik kommt aus dem Backend, nicht aus dem UI
-- Pages = vollständige Screens, Use-Case-orientiert
-- Stores = API-nahe Logik pro Fachbereich (Pinia)
-- Komponenten nur auslagern, wenn Page aus mehreren eigenständigen Blöcken besteht
-- Formulare verpflichtend mit Vuelidate validieren, nicht mit ad-hoc-Validierungslogik
-- Tailwind CSS für Pages und Komponenten verwenden, sofern kein dokumentierter Ausnahmefall besteht
-- Backend-Validierungsfehler im UI sichtbar machen: Feldfehler am Feld, globale Fehler in separatem Bereich
-- Pinia-Stores sollen Request-Aufrufe über ein gemeinsames `useApiFetch()`-Composable auf Basis von `ofetch` kapseln
+- Keine Fachlogik im Controller
+- Keine Rollenabfragen verstreut statt in Policies
+- Keine fehlende Transaktion bei atomaren Fachvorgängen
+- Audit bei fachlich relevanten Änderungen nicht vergessen
 - Keine Rollen- oder Statuslogik im Frontend erfinden
-
----
-
-
-
-## Verbindliches API-Composable
-
-Für Request-Aufrufe in Pinia-Stores ist folgende Struktur zu verwenden:
-
-```ts
-import { $fetch } from 'ofetch'
-
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
-
-export function useApiFetch() {
-  function apiFetch(path, options = {}) {
-    const token = localStorage.getItem('auth_token')
-
-    return $fetch(`${API_BASE}${path}`, {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...options.headers,
-      },
-      ...options,
-    })
-  }
-
-  return { apiFetch }
-}
-```
-
-Base-URL-, Header- und Token-Handling sollen nicht mehrfach direkt in verschiedenen Stores dupliziert werden.
-
-## Verbotene Muster
-
-- Fachlogik im Controller
-- `protected $fillable` statt Attribute
-- `Request $request` statt typisierter FormRequest
-- FormRequest ohne deutsche benutzernahe Validierungsnachrichten bei Formular-Use-Cases
-- Rollenabfragen quer im Code statt in Policies
-- Audit vergessen bei fachlich relevanten Änderungen
-- Fehlende Transaktion bei zusammenhängenden Operationen
-- UI-Screen ohne Use-Case-Bezug
-- Formulare ohne Vuelidate
-- Klassisches freies CSS statt Tailwind CSS ohne dokumentierten Ausnahmefall
-- Backend-Validierungsfehler im UI unterschlagen
-- Rohe Request-Logik direkt in mehreren Stores duplizieren statt `useApiFetch()` zu verwenden
-- Fachliche Annahmen erfinden, die nicht in den Docs stehen
-- Felder, Enum-Werte oder Rollen-Zuordnungen raten
-
----
-
-## Fachliche Wahrheitsquellen
-
-Bei Widersprüchen gilt diese Hierarchie:
-
-1. `docs/domain/` (höchste Autorität)
-2. `docs/by-use-case/` (API-Contracts, Pipeline)
-3. `docs/by-domain/` (Orchestrierung)
-
-Nichts erfinden. Nichts ergänzen. Nur implementieren, was dokumentiert ist.

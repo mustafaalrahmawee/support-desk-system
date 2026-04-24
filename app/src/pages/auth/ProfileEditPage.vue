@@ -1,46 +1,62 @@
 <template>
-  <div class="min-h-screen bg-[#0c0e14] font-[Sora,sans-serif] text-slate-200">
-
-    <!-- Page header -->
-    <header class="border-b border-[#1e2130] bg-[#0f1117]">
-      <div class="mx-auto max-w-2xl px-6 pb-6 pt-8">
-        <p class="mb-2 font-mono text-[.65rem] font-semibold uppercase tracking-[.2em] text-amber-500">SYSTEM · KONTO</p>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-100">Profil bearbeiten</h1>
+  <section class="px-6 py-10">
+    <div class="mx-auto max-w-5xl">
+      <div class="mb-6">
+        <p class="mb-3 text-xs font-bold uppercase tracking-[.12em] text-[#1547d1]">SYSTEM · KONTO</p>
+        <h1 class="text-3xl font-bold tracking-tight text-[#111827] sm:text-[2.2rem]">Profil bearbeiten</h1>
+        <p class="mt-3 max-w-xl text-sm leading-6 text-[#64748b]">
+          Aktualisieren Sie Ihre persönlichen Profildaten.
+        </p>
       </div>
-    </header>
 
-    <div class="mx-auto max-w-2xl px-6 py-8">
-      <div class="rounded-xl border border-[#1e2130] bg-[#0f1117] p-7">
+      <p class="mb-7 flex items-start gap-2 text-sm leading-6 text-[#64748b]">
+        <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#64748b]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0ZM9 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V8Zm1-3a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" clip-rule="evenodd" />
+        </svg>
+        Nur freigegebene Profilfelder können geändert werden.
+      </p>
 
-        <!-- Global success -->
-        <div
-          v-if="uiState === 'success'"
-          class="mb-6 flex items-center gap-2.5 rounded-md border border-green-500/25 bg-green-500/8 px-3.5 py-3 text-sm text-green-300"
-        >
-          <svg class="h-4 w-4 shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      <div
+        v-if="uiState === 'success'"
+        class="mb-5 flex items-center justify-between gap-3 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700"
+      >
+        <span class="flex items-center gap-2">
+          <svg class="h-4 w-4 shrink-0 text-green-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd" />
           </svg>
           Profil erfolgreich gespeichert.
-        </div>
+        </span>
+        <button type="button" class="text-green-700/70 transition hover:text-green-900" @click="uiState = 'initial'">
+          <span class="sr-only">Meldung schließen</span>
+          ×
+        </button>
+      </div>
 
-        <!-- Global conflict/error -->
-        <div
-          v-if="errorMessage"
-          class="mb-6 flex items-start gap-2.5 rounded-md border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-sm text-red-300"
-          role="alert"
-        >
-          <svg class="mt-px h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      <div
+        v-if="errorMessage"
+        class="mb-5 flex items-center justify-between gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+        role="alert"
+      >
+        <span class="flex items-center gap-2">
+          <svg class="h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0Zm-7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-1-9a1 1 0 0 0-1 1v4a1 1 0 1 0 2 0V6a1 1 0 0 0-1-1Z" clip-rule="evenodd" />
           </svg>
-          <span>{{ errorMessage }}</span>
-        </div>
+          {{ errorMessage }}
+        </span>
+        <button type="button" class="text-red-700/70 transition hover:text-red-900" @click="errorMessage = ''">
+          <span class="sr-only">Meldung schließen</span>
+          ×
+        </button>
+      </div>
 
-        <!-- Form -->
-        <form class="space-y-5" @submit.prevent="handleSubmit" novalidate>
-
-          <!-- First name -->
+      <form
+        class="rounded-lg border border-[#dfe5ef] bg-white p-6 shadow-sm sm:p-7"
+        @submit.prevent="handleSubmit"
+        novalidate
+      >
+        <div class="space-y-5">
           <div>
-            <label class="mb-1.5 block text-[.72rem] font-semibold uppercase tracking-[.08em] text-slate-400" for="first_name">
+            <label class="mb-2 block text-sm font-bold text-[#334155]" for="first_name">
               Vorname
             </label>
             <input
@@ -49,18 +65,17 @@
               type="text"
               autocomplete="given-name"
               :disabled="isLoading"
-              class="w-full rounded-md border bg-[#131620] px-3.5 py-3 text-sm text-slate-200 placeholder-slate-700 outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+              class="h-11 w-full rounded-md border bg-white px-4 text-sm text-[#111827] outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f1f5f9] disabled:text-[#64748b]"
               :class="v$.first_name.$error || serverErrors.first_name
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-[#1e2535] focus:border-amber-500 focus:ring-amber-500/15'"
+                ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                : 'border-[#cbd5e1] focus:border-[#1547d1] focus:ring-blue-100'"
             />
-            <p v-if="v$.first_name.$error" class="mt-1.5 font-mono text-xs text-red-400">Vorname ist erforderlich.</p>
-            <p v-else-if="serverErrors.first_name" class="mt-1.5 font-mono text-xs text-red-400">{{ serverErrors.first_name }}</p>
+            <p v-if="v$.first_name.$error" class="mt-2 text-xs font-semibold text-red-600">Vorname ist erforderlich.</p>
+            <p v-else-if="serverErrors.first_name" class="mt-2 text-xs font-semibold text-red-600">{{ serverErrors.first_name }}</p>
           </div>
 
-          <!-- Last name -->
           <div>
-            <label class="mb-1.5 block text-[.72rem] font-semibold uppercase tracking-[.08em] text-slate-400" for="last_name">
+            <label class="mb-2 block text-sm font-bold text-[#334155]" for="last_name">
               Nachname
             </label>
             <input
@@ -69,18 +84,17 @@
               type="text"
               autocomplete="family-name"
               :disabled="isLoading"
-              class="w-full rounded-md border bg-[#131620] px-3.5 py-3 text-sm text-slate-200 placeholder-slate-700 outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+              class="h-11 w-full rounded-md border bg-white px-4 text-sm text-[#111827] outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f1f5f9] disabled:text-[#64748b]"
               :class="v$.last_name.$error || serverErrors.last_name
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-[#1e2535] focus:border-amber-500 focus:ring-amber-500/15'"
+                ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                : 'border-[#cbd5e1] focus:border-[#1547d1] focus:ring-blue-100'"
             />
-            <p v-if="v$.last_name.$error" class="mt-1.5 font-mono text-xs text-red-400">Nachname ist erforderlich.</p>
-            <p v-else-if="serverErrors.last_name" class="mt-1.5 font-mono text-xs text-red-400">{{ serverErrors.last_name }}</p>
+            <p v-if="v$.last_name.$error" class="mt-2 text-xs font-semibold text-red-600">Nachname ist erforderlich.</p>
+            <p v-else-if="serverErrors.last_name" class="mt-2 text-xs font-semibold text-red-600">{{ serverErrors.last_name }}</p>
           </div>
 
-          <!-- Username -->
           <div>
-            <label class="mb-1.5 block text-[.72rem] font-semibold uppercase tracking-[.08em] text-slate-400" for="username">
+            <label class="mb-2 block text-sm font-bold text-[#334155]" for="username">
               Benutzername
             </label>
             <input
@@ -89,41 +103,39 @@
               type="text"
               autocomplete="username"
               :disabled="isLoading"
-              class="w-full rounded-md border bg-[#131620] px-3.5 py-3 font-mono text-sm text-slate-200 placeholder-slate-700 outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+              class="h-11 w-full rounded-md border bg-white px-4 text-sm text-[#111827] outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:bg-[#f1f5f9] disabled:text-[#64748b]"
               :class="v$.username.$error || serverErrors.username
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-[#1e2535] focus:border-amber-500 focus:ring-amber-500/15'"
+                ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                : 'border-[#cbd5e1] focus:border-[#1547d1] focus:ring-blue-100'"
             />
-            <p v-if="v$.username.$error" class="mt-1.5 font-mono text-xs text-red-400">Benutzername ist erforderlich.</p>
-            <p v-else-if="serverErrors.username" class="mt-1.5 font-mono text-xs text-red-400">{{ serverErrors.username }}</p>
+            <p v-if="v$.username.$error" class="mt-2 text-xs font-semibold text-red-600">Benutzername ist erforderlich.</p>
+            <p v-else-if="serverErrors.username" class="mt-2 text-xs font-semibold text-red-600">{{ serverErrors.username }}</p>
           </div>
+        </div>
 
-          <!-- Actions -->
-          <div class="flex gap-3 pt-2">
-            <button
-              type="submit"
-              :disabled="isLoading"
-              class="flex items-center gap-2 rounded-md bg-amber-500 px-5 py-2.5 text-sm font-semibold text-[#0c0e14] transition hover:bg-amber-400 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              <svg v-if="isLoading" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-              </svg>
-              {{ isLoading ? 'Speichern…' : 'Speichern' }}
-            </button>
+        <div class="mt-7 flex flex-col-reverse gap-3 border-t border-[#edf1f6] pt-5 sm:flex-row sm:justify-end">
+          <router-link
+            to="/profile"
+            class="inline-flex h-11 items-center justify-center rounded-md border border-[#dfe5ef] bg-white px-6 text-sm font-semibold text-[#64748b] transition hover:border-[#b8c7e6] hover:text-[#334155]"
+          >
+            Abbrechen
+          </router-link>
 
-            <router-link
-              to="/profile"
-              class="rounded-md border border-[#1e2535] px-5 py-2.5 text-sm text-slate-400 transition hover:border-slate-500 hover:text-slate-300"
-            >
-              Abbrechen
-            </router-link>
-          </div>
-
-        </form>
-      </div>
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[#1547d1] px-7 text-sm font-semibold text-white transition hover:bg-[#0f3db7] active:translate-y-px disabled:cursor-not-allowed disabled:bg-[#a9bee9]"
+          >
+            <svg v-if="isLoading" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v8H4z"/>
+            </svg>
+            {{ isLoading ? 'Speichern...' : 'Speichern' }}
+          </button>
+        </div>
+      </form>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -148,7 +160,6 @@ const rules = {
 
 const v$ = useVuelidate(rules, form)
 
-// API-Feldfehler (z.B. Konflikt vom Server)
 const serverErrors = reactive({ first_name: '', last_name: '', username: '' })
 
 onMounted(() => {

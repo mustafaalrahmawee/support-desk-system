@@ -10,11 +10,14 @@ allowed-tools: Read Grep Glob Bash
 
 Du startest jetzt eine neue Implementierungs-Session. Halte dich strikt an die folgende Reihenfolge.
 
+Für QA-Regeln, Fehlerklassen und technische Arbeitsregeln gilt `CLAUDE.md`.
+Für Grundregeln, Leseregeln und Dokumenthierarchie gilt `docs/README.md`.
+
 ---
 
 ## Schritt 1: Fachliche Grundlage lesen
 
-Lies diese drei Dateien vollständig:
+Lies diese Dateien vollständig:
 
 1. `docs/domain/01_miniworld.md`
 2. `docs/domain/02_business-rules.md`
@@ -22,27 +25,24 @@ Lies diese drei Dateien vollständig:
 
 ---
 
-## Schritt 2: Architektur und Konventionen lesen
+## Schritt 2: Meta- und Arbeitsreferenz lesen
 
-Lies einmalig:
-
-- `docs/README.md`
+Lies `docs/README.md`.
 
 ---
 
 ## Schritt 3: Domain-Koordinator lesen
 
-Lies den Koordinator für die Domain **$0**:
-
-- `docs/by-domain/$0.md`
+Lies `docs/by-domain/$0.md`.
 
 Entnimm daraus:
 
 - Welche Use Cases gehören zur Domain
 - Empfohlene Reihenfolge
-- Abhängigkeiten (fachlich und technisch)
-- Gemeinsame Bausteine (Backend + Frontend)
+- Abhängigkeiten fachlich und technisch
+- Gemeinsame Bausteine Backend und Frontend
 - Session-Bundles
+- Welche Design-Referenzen für die Domain vorbereitet sein sollen
 
 ---
 
@@ -50,7 +50,7 @@ Entnimm daraus:
 
 Falls ein Bundle-Argument übergeben wurde (`$1`), verwende das angegebene Bundle aus dem Koordinator.
 
-Falls kein Bundle angegeben wurde, verwende das vollständige Bundle (alle Use Cases der Domain).
+Falls kein Bundle angegeben wurde, verwende das vollständige Bundle aller Use Cases der Domain.
 
 ---
 
@@ -59,14 +59,15 @@ Falls kein Bundle angegeben wurde, verwende das vollständige Bundle (alle Use C
 Erstelle einen strukturierten Plan mit:
 
 - **Domain:** $0
-- **Bundle:** (gewähltes Bundle mit UCs)
+- **Bundle:** gewähltes Bundle mit Use Cases
 - **Reihenfolge:** UC-Liste in Implementierungsreihenfolge
 - **Pro UC:**
   - Datei: `docs/by-use-case/{uc}.md`
   - Backend: Route, Controller, Action, Model
-  - Frontend: Page, Store-Funktion
-- **Abhängigkeiten:** Was muss vorher existieren
-- **Dateien die erzeugt/geändert werden**
+  - Frontend: Page, Store-Funktion, benötigte Design-Referenz
+- **Abhängigkeiten:** Was vorher existieren muss
+- **Dateien die erzeugt oder geändert werden**
+- **Design-Referenzen:** Welche globalen und UC-spezifischen Bilder verwendet werden
 
 ---
 
@@ -74,41 +75,62 @@ Erstelle einen strukturierten Plan mit:
 
 Präsentiere den Plan und warte auf Bestätigung, bevor du mit der Implementierung beginnst.
 
-**Implementiere NICHTS bevor der Plan bestätigt wurde.**
+**Implementiere nichts bevor der Plan bestätigt wurde.**
 
 ---
 
-## Schritt 7: Pipeline pro UC abarbeiten (erst nach Bestätigung)
+## Schritt 7: Pipeline abarbeiten nach Bestätigung
+
+### Phase A: Backend für alle UCs des Bundles umsetzen
 
 Für jeden UC im bestätigten Plan:
 
 1. `docs/by-use-case/{uc}.md` lesen
-2. **Backend implementieren** — Abschnitte 1–3. Die `laravel/agent-skills` helfen hier passiv (Eloquent, Actions, FormRequests, Policies). Keine manuelle Auslösung nötig — bei Widersprüchen gilt immer die Projektdokumentation (`docs/`).
-3. **Backend-QA** — Subagent `backend-qa` aufrufen (Kontext: UC-Nummer + Dateipfad) → Bericht erhalten → Nachbesserungsloop
-4. **UI-Gerüst erzeugen** — Frontend Design Plugin verwenden → Vue-Komponentengerüst aus Abschnitt 8 (Prompt direkt an das Plugin übergeben, kein externer Dienst)
-5. **Frontend vervollständigen** — Store-Anbindung, Validierung, Events ergänzen (Abschnitte 5–7)
-6. **Frontend-QA** — Subagent `frontend-qa` aufrufen (Kontext: UC-Nummer + Dateipfad) → Bericht erhalten → Nachbesserungsloop
+2. Backend auf Basis der Abschnitte 1 bis 4 umsetzen
+3. `docs/patterns/backend-laravel.md` nur als technisches Muster verwenden
+4. Bei Widersprüchen gilt die Dokumenthierarchie aus `docs/README.md`
 
-Kein Abschnitt überspringen. Bei Kontextfülle: `/clear` und mit dem nächsten UC weitermachen.
+Kein Frontend und kein Backend-QA dazwischen mischen.
 
-### Nachbesserungsloop nach QA
+### Phase B: Backend-QA für Domain oder Bundle
 
-Wenn ein QA-Subagent Fehler meldet:
+Nach Abschluss der Backend-Implementierung für alle UCs des bestätigten Bundles:
 
-1. Analysiere den Bericht — identifiziere betroffene Datei und Ursache
-2. Behebe den Fehler — ein Versuch zählt nur bei gezielter Code-Änderung, kein bloßer Re-Run
-3. Starte den QA-Subagenten erneut
-4. Wiederhole bis alle Tests grün oder **maximal 3 Versuche**
-5. Nach 3 Versuchen: stoppe und frage den Benutzer mit detailliertem Bericht (was fehlschlägt, was versucht wurde, mögliche Ursache)
+1. Subagent `backend-qa` aufrufen
+2. Kontext ist die Domain oder das Bundle, nicht ein einzelner Use Case
+3. Der Subagent arbeitet nach `.claude/skills/backend-qa/SKILL.md`
+4. Der Subagent erzeugt oder aktualisiert genau eine gemeinsame QA-Datei unter `docs/qa/backend/{domain}.md`
+5. Der Subagent bereitet die Testpunkte für die relevanten Use Cases der Domain vor
+6. Danach werden belegte Benutzerergebnisse ausgewertet
+7. Der Subagent liefert einen kompakten Bericht an den Hauptagenten
 
-Bei `/frontend-qa`: Nur **Typ-A-Fehler** (UI) selbst beheben. Bei Typ-B (Infrastruktur) oder Typ-C (Backend-Logik) **keine Vue-Dateien ändern** — zuerst die Ursache klären.
+Bei Fehlern gelten die Nachbesserungsregeln aus `CLAUDE.md`.
+
+### Phase C: Frontend pro UC umsetzen
+
+Erst nach erfolgreicher Backend-QA oder akzeptiertem Backend-Stand.
+
+Für jeden UC im bestätigten Plan:
+
+1. `docs/by-use-case/{uc}.md` lesen
+2. globale Design-Referenzen prüfen:
+   - `docs/design-references/app-shell.png`
+   - `docs/design-references/navigation-header.png`
+3. passende UC-Referenz prüfen:
+   - `docs/design-references/{domain}/{uc}_*.png` oder entsprechend dokumentierte Datei
+4. `docs/patterns/frontend-vue.md` als technisches Muster verwenden
+5. Frontend auf Basis der Use-Case-Dokumentation, Patterns und Design-Referenzen umsetzen
+6. Page, Store, Validierung und Events anschließen
+7. Subagent `frontend-qa` für den einzelnen UC aufrufen
+8. Bericht auswerten
+9. Falls nötig nachbessern — Fehlerklassen und Nachbesserungsregeln gelten aus `CLAUDE.md`
 
 ---
 
 ## Beispielaufrufe
 
-- `/session auth` → Vollständige Auth-Domain (UC 36–39)
-- `/session auth bundle-a` → Auth-Grundlage (UC 36 + 37)
-- `/session users` → Vollständige Users-Domain (UC 40–43)
-- `/session users bundle-b` → Bearbeitung + Deaktivierung (UC 42 + 43)
-- `/session tickets` → Vollständige Tickets-Domain (UC 22–30)
+- `/session auth` → vollständige Auth-Domain
+- `/session auth bundle-a` → Auth-Grundlage
+- `/session users` → vollständige Users-Domain
+- `/session users bundle-b` → bestimmtes Users-Bundle
+- `/session tickets` → vollständige Tickets-Domain

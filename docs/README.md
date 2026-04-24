@@ -2,9 +2,17 @@
 
 ## Zweck
 
-Diese Datei ist die zentrale Referenz für das gesamte Projekt.
+Diese Datei ist die zentrale Meta- und Arbeitsreferenz des Projekts.
 
-Sie beschreibt den technischen Stack, die Architekturprinzipien für Backend und Frontend, die Dokumentstruktur, die Pipeline pro Use Case und die Regeln für die Arbeit mit Claude Code und anderen Agenten.
+Sie beschreibt:
+- den Projektkontext
+- die Dokumentstruktur
+- die Rollen der Dokumentebenen
+- die Lesereihenfolge
+- die Dokumenthierarchie bei Widersprüchen
+- den groben Arbeitsablauf pro Domain und Use Case
+
+Fachliche Wahrheit liegt nicht in dieser Datei, sondern in `docs/domain/`.
 
 ---
 
@@ -12,374 +20,243 @@ Sie beschreibt den technischen Stack, die Architekturprinzipien für Backend und
 
 ### Backend
 
-- Laravel 13, PHP 8.4, PostgreSQL 16
-- Auth: Laravel Sanctum (Token-basiert)
-- Queue: Redis (oder database)
-- QA: Claude Code Subagent (`backend-qa`) über `curl` und `php artisan tinker`
-- Container: Docker (`support_desk_api`, PHP 8.4-cli-alpine)
+- Laravel 13
+- PHP 8.4
+- PostgreSQL 16
+- Laravel Sanctum
 
 ### Frontend
 
-- Vue.js, Tailwind CSS, Pinia, ofetch, Vuelidate
-- UI-Erzeugung: Claude Code + Frontend Design Plugin (`frontend-design@claude-plugins-official`)
-- QA: Claude Code Subagent (`frontend-qa`) über Playwright MCP
-- Container: Docker (`support_desk_app`)
+- Vue.js
+- Tailwind CSS
+- Pinia
+- ofetch
+- Vuelidate
 
 ### Infrastruktur
 
-- Docker Compose (PostgreSQL, Laravel API, Vue.js App)
-- Ports: API `8000`, App `5173`, DB `5432`
+- Docker Compose
+- API-Port: `8000`
+- App-Port: `5173`
+- DB-Port: `5432`
+
+### QA
+
+- Backend-QA über `curl` und `php artisan tinker`
+- Frontend-QA über Playwright MCP
 
 ---
 
 ## Dokumentstruktur
 
-```
-docs/
-├── domain/                       ← fachliche Grundlage (unverändert)
-│   ├── 01_miniworld.md
-│   ├── 02_business-rules.md
-│   └── 03_er.md
-├── README.md                     ← diese Datei
-├── by-domain/                    ← Koordinator pro Domain (Session-Orchestrierung)
-│   ├── auth.md
-│   ├── users.md
-│   ├── customers.md
-│   ├── contacts.md
-│   ├── contracts.md
-│   ├── tickets.md
-│   ├── messages.md
-│   ├── inbound.md
-│   ├── categories.md
-│   └── media.md
-└── by-use-case/                  ← komplette Pipeline pro Use Case (Arbeitseinheit)
-    ├── uc36_login.md
-    ├── uc37_logout.md
-    ├── uc38_profile_show.md
-    ├── uc39_profile_update.md
-    └── ...
-```
-
-### Rollen der Ebenen
-
-**`domain/`** — fachliche Wahrheit. Miniworld, Business Rules, ER-Modell. Wird immer zuerst gelesen. Wird nie durch andere Dateien ersetzt.
-
-**`by-domain/`** — Koordinator. Beschreibt welche Use Cases zu einer Domain gehören, in welcher Reihenfolge sie implementiert werden, welche Abhängigkeiten bestehen, welche gemeinsamen Bausteine existieren und welche Session-Bundles sinnvoll sind. Enthält keine Pipeline selbst.
-
-**`by-use-case/`** — Pipeline-Träger. Jede Datei beschreibt die komplette Pipeline für einen Use Case in 9 Abschnitten: Use Case → API-Contract → Backend-Architektur → Backend-QA → Frontend-Architektur → Screen-Flow → UI-Regeln → Frontend-Design-Prompt → Frontend-QA. Eine Datei, ein Use Case, ein vollständiger Durchlauf.
-
-### Warum diese Struktur?
-
-Eine `by-domain/` Datei mit 9 Use Cases und jeweils 9 Abschnitten wird schnell 1.500+ Zeilen lang — das gleiche Monster-Datei-Problem wie vorher. Stattdessen bleibt die Domain-Datei schlank (Orchestrierung), und die eigentliche Arbeit läuft über die atomaren `by-use-case/` Dateien. Claude Code kann jederzeit eine ganze Domain abarbeiten (über den Koordinator) oder nur einen einzelnen Use Case (direkt die Datei).
-
-### Leseregeln
-
-- `domain/` wird immer zuerst gelesen
-- `by-domain/` wird gelesen, um die Session zu planen
-- `by-use-case/` wird gelesen, um die Pipeline auszuführen
-- `README.md` wird einmal am Anfang gelesen
+    docs/
+    ├── domain/
+    │   ├── 01_miniworld.md
+    │   ├── 02_business-rules.md
+    │   └── 03_er.md
+    ├── README.md
+    ├── by-domain/
+    │   ├── auth.md
+    │   ├── users.md
+    │   ├── customers.md
+    │   ├── contacts.md
+    │   ├── contracts.md
+    │   ├── tickets.md
+    │   ├── messages.md
+    │   ├── inbound.md
+    │   ├── categories.md
+    │   └── media.md
+    ├── by-use-case/
+    │   ├── uc36_login.md
+    │   ├── uc37_logout.md
+    │   ├── uc38_profile_show.md
+    │   ├── uc39_profile_update.md
+    │   └── ...
+    ├── patterns/
+    │   ├── backend-laravel.md
+    │   └── frontend-vue.md
+    └── design-references/
+        ├── app-shell.png
+        ├── navigation-header.png
+        ├── auth/
+        │   ├── uc36_login.png
+        │   └── ...
+        ├── users/
+        │   ├── uc40_users_list.png
+        │   ├── uc41_user_create.png
+        │   ├── uc42_user_edit.png
+        │   └── uc43_user_deactivate.png
+        └── ...
 
 ---
 
-## Backend-Architektur
+## Rollen der Dokumentebenen
 
-### Request-Lifecycle
+### `docs/domain/`
 
-```
-Route → Middleware → FormRequest → Controller → Policy → Action → Model → Response
-```
+Fachliche Wahrheit.
 
-FormRequest wird VOR dem Controller-Body ausgeführt (Dependency Injection).
+Enthält:
+- Miniworld
+- Business Rules
+- ER-Modell
 
-### Schichten und Verantwortlichkeiten
+Diese Dateien definieren:
+- fachliche Objekte
+- Beziehungen
+- Rollen
+- Statuslogik
+- Constraints
+- fachliche Grundprinzipien
 
-**Controller** — dünn halten. Darf nur: Request entgegennehmen, Policy prüfen, eine Action aufrufen, Response zurückgeben. Keine Fachlogik.
+### `docs/by-domain/`
 
-**FormRequest** — formale Validierung (Pflichtfelder, Formate, Enum-Werte, exists, unique). Keine komplexen Fachprüfungen. `authorize()` auf `return true` setzen — Autorisierung über Policy im Controller. Für benutzernahe Formulare sollen explizite deutsche Validierungsnachrichten über `messages()` definiert werden, damit verständliche Fehlermeldungen ans Frontend geliefert werden.
+Koordinator pro Domain.
 
-**Policy** — rollenbasierte Berechtigungen. Welche Rolle was darf, steht in `docs/domain/02_business-rules.md`. Keine Rollen-Zuordnungen erfinden.
+Enthält:
+- fachlichen Scope der Domain
+- zugehörige Use Cases
+- empfohlene Reihenfolge
+- Abhängigkeiten
+- gemeinsame Bausteine
+- sinnvolle Session-Bundles
 
-**Action** — Kern der Fachlogik. Eine Action pro Use Case. `execute()` als einzige öffentliche Methode. `DB::transaction()` für atomare Operationen. Audit am Ende auslösen. Fachliche Exceptions werfen.
+Diese Dateien enthalten keine vollständige Umsetzungs-Pipeline.
 
-**Model** — Daten, Beziehungen, Scopes, SoftDeletes, kleine Hilfen. Keine Orchestrierungslogik.
+### `docs/by-use-case/`
 
-**Services** — Querschnittslogik (Audit, Inbound-Resolver, Media-Handling).
+Pipeline pro Use Case.
 
-### Laravel 13 Syntax
+Jede Datei beschreibt einen vollständigen Use Case in einer festen Struktur:
+1. Use Case
+2. API-Contract
+3. Backend-Architektur
+4. Backend-QA
+5. Frontend-Architektur
+6. Screen-Flow
+7. UI-Regeln
+8. UI-Referenz
+9. Frontend-QA
 
-- `#[Fillable([...])]`, `#[Hidden([...])]`, `#[Table('...')]`, `#[Casts([...])]` statt `protected $fillable`
-- `#[Middleware('auth:sanctum')]` auf Controller
-- `#[Tries(3)]`, `#[Timeout(30)]`, `#[Queue('...')]` auf Jobs
-- `Queue::route()` für zentrales Queue-Routing im AppServiceProvider
+### `docs/patterns/`
 
-### PHP 8.4 Syntax
+Technische Muster.
 
-- Property Hooks für berechnete Werte auf Models
-- Asymmetric Visibility für Value Objects
-- Method Chaining auf `new` ohne Klammern
+Enthält wiederverwendbare technische Standardmuster für:
+- Laravel
+- Vue
+- Pinia
+- Vuelidate
+- ofetch
 
-### Backend-Ordnerstruktur
+Diese Dateien liefern technische Standardstrukturen, aber keine fachliche Wahrheit.
 
-```
-api/app/
-├── Actions/         (Auth/, InternalUsers/, Customers/, Contacts/, Contracts/,
-│                     Tickets/, Messages/, Inbound/, Categories/, Media/)
-├── Http/
-│   ├── Controllers/ (Auth/, Admin/, Customers/, Contacts/, Contracts/,
-│   │                 Tickets/, Messages/, Inbound/, Categories/, Media/)
-│   ├── Requests/    (gleiche Aufteilung)
-│   └── Middleware/
-├── Jobs/            (Inbound/, Audit/, Notifications/, Media/)
-├── Models/
-├── Policies/
-├── Services/        (Audit/, Inbound/, Media/)
-└── Support/
-    ├── Enums/
-    └── Exceptions/
-```
+### `docs/design-references/`
 
-### Jobs und Queues
+Visuelle Referenzen für Layout, Navigation und Use-Case-Screens.
 
-Jobs rufen Actions auf — sie enthalten selbst keine Fachlogik. Verwendung für: Inbound-Verarbeitung, Audit-Logging, Benachrichtigungen, Medienverarbeitung.
+Enthält:
+- globale Layout- und Navigationsbilder wie `app-shell.png` und `navigation-header.png`
+- Domain-Unterordner mit Screen-Referenzen pro Use Case
+- z. B. `users/uc40_users_list.png` oder `users/uc41_user_create.png`
 
-### Response-Format
+Diese Dateien dienen nur als visuelle Vorlage für:
+- Layout
+- Hierarchie
+- Abstände
+- Kartenstruktur
+- Header
+- Navigation
+- Formdarstellung
+- allgemeine UI-Konsistenz
 
-```json
-{
-  "message": "Vorgang erfolgreich.",
-  "data": { }
-}
-```
+Diese Dateien definieren keine fachliche Wahrheit.
 
-HTTP-Status-Codes: 200 (Erfolg), 201 (Erstellt), 401 (Nicht authentifiziert), 403 (Nicht autorisiert), 404 (Nicht gefunden), 409 (Fachlicher Konflikt), 422 (Validierungsfehler).
+### `docs/README.md`
 
-### Fachliche Exceptions
+Zentrale Meta- und Arbeitsreferenz.
 
-Fachliche Fehler als spezifische Exceptions, nicht generische. Im Exception Handler auf HTTP-Status mappen (409 für Konflikte, 422 für fachliche Validierung).
-
-### Soft Delete und Audit
-
-Soft Delete über Actions steuern, nicht direkt im Controller. Audit immer innerhalb der Action aufrufen. Welche Vorgänge auditpflichtig sind und welche abhängigen Objekte bei Soft Delete betroffen sind, steht in den Business Rules und Use Cases.
-
-### Atomare Transaktionen — Pflicht bei
-
-- Customer mit erstem Contact anlegen
-- Customer-Merge
-- Internen Benutzer deaktivieren + Actor synchronisieren
-- Customer deaktivieren + abhängige Objekte synchronisieren
-- Inbound-Prüffall entscheiden → Customer + Ticket + Nachricht erzeugen
-- Eingehende Nachricht zuordnen
-
----
-
-## Frontend-Architektur
-
-### Grundprinzip
-
-Fachlogik kommt aus den Backend-Dokumenten. Das Frontend darf fachliche Regeln nicht selbst erfinden.
-
-### Schichten
-
-**Pages** — vollständige Screens, Use-Case-orientiert.
-
-**Components** — UI-Bausteine, die aus Pages ausgelagert werden, wenn ein Screen zu groß wird oder aus mehreren eigenständigen Blöcken mit eigenen Zuständen besteht. Nicht vorsorglich auslagern — solange eine Page kompakt und übersichtlich bleibt, gehört alles in die Page.
-
-**Stores** — API-nahe Logik pro Fachbereich (Pinia). Minimal nötige Funktionen pro Use Case, nicht alles auf einmal. Stores sollen Requests nicht roh verstreuen, sondern ein gemeinsames API-Composable verwenden.
-
-**Validators** — Vuelidate-Regeln für Formulare. Vuelidate ist für Formularvalidierung verbindlich; ad-hoc-Validierungslogik statt Vuelidate soll vermieden werden. Backend-Validierungsfehler ergänzen die Frontend-Validierung und müssen im UI sichtbar verarbeitet werden.
-
-**API Client / Composables** — zentrale ofetch-Konfiguration. Für Request-Aufrufe in Stores soll ein gemeinsames `useApiFetch()`-Composable für Base-URL, Header und Token-Handling verwendet werden.
-
-### Frontend-Ordnerstruktur
-
-```
-src/
-  pages/         (auth/, users/, tickets/, customers/, contacts/, categories/)
-  components/    (auth/, users/, tickets/, customers/, contacts/, shared/)
-  stores/        (auth.store.ts, users.store.ts, tickets.store.ts, ...)
-  services/api/  (client.ts)
-  composables/
-  layouts/
-  router/
-  utils/
-  validators/
-```
-
-### UI-Erzeugung: Frontend Design Plugin
-
-Das `frontend-design` Plugin ist der verbindliche Workflow zur UI-Erzeugung. Der Workflow erzeugt UI-Struktur lokal, keine Fachlogik, kein externer Dienst.
-
-### UI-Regeln
-
-Ruhige Admin-, Support- und Prüfoberfläche. Lesbarkeit vor Effekten. Konsistenz vor Einzellösung.
+Diese Datei steuert nicht die fachliche Wahrheit, sondern die Struktur, Leselogik und den groben Arbeitsablauf.
 
 ---
 
-### Verbindliches API-Composable
+## Leseregeln
 
-```ts
-import { $fetch } from 'ofetch'
-
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
-
-export function useApiFetch() {
-  function apiFetch(path, options = {}) {
-    const token = localStorage.getItem('auth_token')
-
-    return $fetch(`${API_BASE}${path}`, {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...options.headers,
-      },
-      ...options,
-    })
-  }
-
-  return { apiFetch }
-}
-```
-
-Pinia-Stores sollen dieses Composable verwenden, statt Base-URL-, Header- und Token-Logik mehrfach zu duplizieren.
-
-Formulare sollen mit Tailwind CSS umgesetzt werden. Feldbezogene Backend-Validierungsfehler gehören direkt ans jeweilige Feld, globale Fehler in einen separaten Fehlerbereich.
+- `docs/domain/` immer zuerst lesen
+- `docs/README.md` für Arbeitslogik und Dokumentstruktur lesen
+- `docs/by-domain/` lesen, um eine Domain-Session zu planen
+- `docs/by-use-case/` lesen, um einen konkreten Use Case umzusetzen
+- `docs/patterns/` nur für technische Muster verwenden
+- `docs/design-references/` nur als visuelle Vorlage verwenden
+- keine große Datei laden, wenn eine kleinere passende Datei ausreicht
 
 ---
 
-## Pipeline pro Use Case
+## Dokumenthierarchie bei Widersprüchen
 
-Jede `by-use-case/` Datei beschreibt die komplette Pipeline in 9 Abschnitten:
+Bei Widersprüchen gilt diese Reihenfolge:
 
-### Abschnitt 1: Use Case
-Ziel, Akteure, Vorbedingungen, Hauptablauf, Alternativabläufe, Nachbedingungen.
+1. `docs/domain/`
+2. `docs/by-use-case/`
+3. `docs/by-domain/`
+4. `docs/README.md`
+5. `docs/patterns/`
+6. `docs/design-references/`
 
-### Abschnitt 2: API-Contract
-Endpoint, Methode, Authentifizierung, Request, Success Response, Failed Cases.
+`docs/patterns/` liefern technische Muster, aber keine fachlichen Regeln.
 
-### Abschnitt 3: Backend-Architektur
-Route, Middleware, FormRequest, Controller, Policy, Action, Model/Datenbasis.
-
-### Abschnitt 4: Backend-QA
-Welche Tests der `backend-qa` Subagent ausführen soll: curl-Requests, HTTP-Status, JSON-Struktur, Datenbankfolgen, Audit-Logs, RBAC.
-
-### Abschnitt 5: Frontend-Architektur
-Pages, Components, Store-Funktionen, Validators, Projektstruktur.
-
-### Abschnitt 6: Screen-Flow
-Screen-Name, sichtbare Hauptbereiche, Benutzeraktionen, erwartete Frontend-Logik, UI-Zustände.
-
-### Abschnitt 7: UI-Regeln
-Visuelle Muster für diesen Screen-Bereich.
-
-### Abschnitt 8: Frontend-Design-Prompt
-Vorbereiteter Prompt für die UI-Erzeugung über das Frontend Design Plugin.
-
-### Abschnitt 9: Frontend-QA
-Welche Tests der `frontend-qa` Subagent über Playwright MCP ausführen soll.
+`docs/design-references/` liefern visuelle Vorlagen, aber keine fachlichen Regeln.
 
 ---
 
-## Inhalt einer by-domain/ Datei
+## Arbeitsablauf
 
-Domain-Dateien sind Koordinatoren. Sie enthalten:
+### Vor einer Domain-Session
 
-1. **Domain-Überblick** — fachlicher Scope, betroffene Hauptobjekte, Abgrenzung
-2. **Use-Case-Liste** — Links zu den `by-use-case/` Dateien
-3. **Empfohlene Reihenfolge** — in welcher Reihenfolge die Use Cases implementiert werden sollten
-4. **Abhängigkeiten** — fachliche und technische Voraussetzungen
-5. **Gemeinsame Bausteine** — Backend (Routes, Controller, Actions, Models) und Frontend (Pages, Store, Components)
-6. **Session-Bundles** — sinnvolle Gruppierungen für Sessions (z.B. "Auth-Grundlage: UC 36+37", "Vollständige Auth: UC 36–39")
-7. **Verweise auf Wahrheitsquellen** — Links zu `domain/`
+1. `docs/domain/01_miniworld.md` lesen
+2. `docs/domain/02_business-rules.md` lesen
+3. `docs/domain/03_er.md` lesen
+4. `docs/README.md` lesen
+5. `docs/by-domain/{domain}.md` lesen
 
-Domain-Dateien enthalten keine Pipeline. Die Pipeline lebt in den `by-use-case/` Dateien.
+### Vor einer Frontend-Domain-Session
 
----
+Vor Beginn der Frontend-Umsetzung werden die visuellen Referenzen der Domain vorbereitet.
 
-## Domains und Use Cases
+Dazu gehören:
+- globale Layout- und Navigationsbilder in `docs/design-references/`
+- getrennte Screen-Bilder pro Use Case unter `docs/design-references/{domain}/`
 
-| Domain | Use Cases | Session-Größe |
-|--------|-----------|---------------|
-| Auth | UC 36–39 | 4 UCs |
-| Users | UC 40–43 | 4 UCs |
-| Customers | UC 5–10 | 6 UCs |
-| Contacts | UC 11–15 | 5 UCs |
-| Contracts | UC 16–21 | 6 UCs |
-| Tickets | UC 22–30 | 9 UCs |
-| Messages | UC 3–4 | 2 UCs |
-| Inbound | UC 1–2 | 2 UCs |
-| Categories | UC 31–32 | 2 UCs |
-| Media | UC 33 | 1 UC |
-| System | UC 34–35 | 2 UCs |
+Während der Frontend-Umsetzung dienen diese Dateien als visuelle Vorlage.
+Die fachliche Umsetzung bleibt weiterhin vollständig an die dokumentierten Projektdateien gebunden.
+
+### Pro Use Case
+
+1. `docs/by-use-case/{uc}.md` lesen
+2. Backend anhand der Use-Case-Dokumentation umsetzen
+3. Backend-QA ausführen
+4. visuelle Referenzen prüfen
+5. Frontend anhand der Use-Case-Dokumentation, der Pattern-Dateien und der Design-Referenzen umsetzen
+6. Frontend-QA ausführen
 
 ---
 
-## Wie eine Session abläuft
+## Grundregeln
 
-### Ganze Domain implementieren
-
-```
-1. docs/domain/ lesen (fachliche Grundlage)
-2. docs/by-domain/{domain}.md lesen (Koordinator: Reihenfolge, Abhängigkeiten)
-3. Für jeden UC in der empfohlenen Reihenfolge:
-   a. docs/by-use-case/{uc}.md öffnen
-   b. Phase 1: Backend implementieren (Abschnitte 1–3)
-   c. Phase 1b: backend-qa Subagent ausführen (Abschnitt 4)
-   d. Phase 2: Frontend implementieren (Abschnitte 5–8, UI-Gerüst via Frontend Design Plugin)
-   e. Phase 2b: frontend-qa Subagent ausführen (Abschnitt 9)
-4. Bei Kontextfülle: /clear und mit nächstem UC weitermachen
-```
-
-### Einzelnen Use Case implementieren
-
-```
-1. docs/domain/ lesen (fachliche Grundlage)
-2. docs/by-use-case/{uc}.md öffnen
-3. Pipeline in 9 Abschnitten abarbeiten
-```
+- Nichts erfinden
+- Nichts fachlich ergänzen
+- Keine Felder, Rollen, Status oder Regeln raten
+- Fachliche Wahrheit immer aus `docs/domain/` ableiten
+- `docs/patterns/` nur für technische Standardstrukturen nutzen
+- `docs/design-references/` nur für visuelle Orientierung nutzen
 
 ---
 
-## Verbotene Muster
+## Verweise
 
-### Backend
-- Fachlogik im Controller
-- `protected $fillable` statt `#[Fillable([...])]`
-- `Request $request` statt typisierter FormRequest
-- Rollenabfragen quer im Code statt in Policies
-- `$model->delete()` direkt im Controller
-- Audit vergessen bei fachlich relevanten Änderungen
-- Fehlende Transaktion bei zusammenhängenden Operationen
-- Generische Exception statt fachlicher Exception
-- Job mit Fachlogik statt Action-Aufruf
-
-### Frontend
-- UI-Screen ohne Use-Case-Bezug
-- Business Rules aus dem UI-Gerüst ableiten
-- Rollenlogik im UI-Code erfinden
-- Statusregeln im Frontend definieren
-- Store-Architektur aus Intuition statt aus API-Contracts
-- Formulare ohne Vuelidate umsetzen
-- Klassisches freies CSS statt Tailwind CSS verwenden, sofern kein dokumentierter Ausnahmefall besteht
-- Backend-Validierungsfehler nicht im UI anzeigen
-- Base-URL-, Header- oder Token-Handling mehrfach direkt in Stores duplizieren statt ein gemeinsames API-Composable zu verwenden
-
-### Allgemein
-- Fachliche Annahmen erfinden, die nicht in den Docs stehen
-- Felder, Enum-Werte, Rollen-Zuordnungen oder Status-Transitionen raten
-- Monster-Dateien laden statt die passende `by-use-case/` Datei
-- Pipeline in `by-domain/` statt in `by-use-case/` beschreiben
-
----
-
-## Fachliche Wahrheitsquellen
-
-- Felder und Beziehungen → `docs/domain/03_er.md`
-- Fachliche Regeln → `docs/domain/02_business-rules.md`
-- Domänenwissen → `docs/domain/01_miniworld.md`
-- Pipeline pro UC → `docs/by-use-case/{uc}.md`
-- Domain-Orchestrierung → `docs/by-domain/{domain}.md`
-
-Die API-Contracts in den `by-use-case/` Dateien sind aus den ursprünglichen Master-Dateien übernommen. Bei Widersprüchen gilt `docs/domain/`.
-
-Nichts erfinden. Nichts ergänzen. Nur implementieren, was dokumentiert ist.
+- Fachliche Wahrheit: `docs/domain/`
+- Domain-Koordination: `docs/by-domain/`
+- Use-Case-Pipeline: `docs/by-use-case/`
+- Backend-Muster: `docs/patterns/backend-laravel.md`
+- Frontend-Muster: `docs/patterns/frontend-vue.md`
+- Visuelle Referenzen: `docs/design-references/`

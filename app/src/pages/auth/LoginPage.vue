@@ -1,88 +1,93 @@
 <template>
-  <div class="flex min-h-screen bg-[#0c0e14] font-[Sora,sans-serif]">
+  <div class="flex min-h-screen bg-[#f8fafc] font-[Sora,sans-serif] text-[#0f172a]">
     <!-- Left: Brand panel -->
     <aside
-      class="relative hidden lg:flex w-[380px] shrink-0 flex-col justify-between border-r border-[#1e2130] bg-[#0f1117] px-10 py-12 overflow-hidden"
+      class="relative hidden w-[470px] shrink-0 overflow-hidden bg-[#edf5ff] px-16 py-16 lg:flex lg:flex-col lg:justify-center"
     >
-      <!-- Grid texture -->
-      <div
-        class="pointer-events-none absolute inset-0"
-        style="
-          background-image:
-            linear-gradient(rgba(245, 158, 11, 0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(245, 158, 11, 0.04) 1px, transparent 1px);
-          background-size: 32px 32px;
-        "
-        aria-hidden="true"
-      ></div>
+      <div class="pointer-events-none absolute bottom-8 left-8 grid grid-cols-2 gap-4 opacity-45" aria-hidden="true">
+        <div class="h-16 w-16 bg-[#dbeafe]"></div>
+        <div class="h-16 w-16 bg-[#dbeafe]"></div>
+        <div class="h-16 w-16 bg-[#dbeafe]"></div>
+        <div class="h-16 w-16 bg-[#dbeafe]"></div>
+      </div>
 
-      <div class="relative z-10">
-        <!-- Logo mark -->
-        <svg class="mb-8" width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <rect x="2" y="2" width="16" height="16" stroke="#f59e0b" stroke-width="2" />
-          <rect
-            x="22"
-            y="2"
-            width="16"
-            height="16"
-            stroke="#f59e0b"
-            stroke-width="2"
-            opacity="0.5"
-          />
-          <rect
-            x="2"
-            y="22"
-            width="16"
-            height="16"
-            stroke="#f59e0b"
-            stroke-width="2"
-            opacity="0.5"
-          />
-          <rect x="22" y="22" width="16" height="16" stroke="#f59e0b" stroke-width="2" />
-        </svg>
+      <div class="relative z-10 max-w-[360px]">
+        <div class="mb-10 flex items-center gap-5">
+          <svg class="h-14 w-14 shrink-0" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="17" y="2" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="32" y="2" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="2" y="17" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="17" y="17" width="10" height="10" rx="1.5" fill="#1547d1" opacity="0.6" />
+            <rect x="32" y="17" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="2" y="32" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="17" y="32" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="32" y="32" width="10" height="10" rx="1.5" fill="#1547d1" opacity="0.6" />
+          </svg>
+          <h1 class="text-[1.7rem] font-bold tracking-tight text-[#0f172a]">Support Desk</h1>
+        </div>
 
-        <h1 class="text-[2.4rem] font-bold leading-[1.1] tracking-tight text-slate-100 mb-2">
-          Support<br />Desk
-        </h1>
-        <p class="mb-8 text-xs uppercase tracking-[.14em] text-slate-500">Internes Agentensystem</p>
+        <div class="mb-10 h-px w-28 bg-[#cbd5e1]"></div>
 
-        <div class="mb-6 h-0.5 w-10 bg-amber-500"></div>
-
-        <ul class="space-y-3">
+        <ul class="space-y-8">
           <li
             v-for="feat in features"
-            :key="feat"
-            class="flex items-center gap-2.5 text-sm font-light text-slate-400"
+            :key="feat.title"
+            class="flex items-start gap-5"
           >
-            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>
-            {{ feat }}
+            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-[#2563eb] shadow-[0_10px_24px_rgba(15,23,42,0.08)] ring-1 ring-[#dbeafe]">
+              <svg v-if="feat.icon === 'ticket'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" class="h-5 w-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6.75 17.25 13.5m-10.5 0 6.75-6.75m-9 5.25a2.25 2.25 0 0 0 0 3.182l4.318 4.318a2.25 2.25 0 0 0 3.182 0l7.5-7.5a2.25 2.25 0 0 0 0-3.182L15.182 4.5a2.25 2.25 0 0 0-3.182 0l-7.5 7.5Z" />
+              </svg>
+              <svg v-else-if="feat.icon === 'users'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" class="h-5 w-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+              </svg>
+              <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" class="h-5 w-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-7.5-6h9A2.25 2.25 0 0 1 18.75 6v4.5c0 5.25-3.75 8.25-6.75 9.75-3-1.5-6.75-4.5-6.75-9.75V6A2.25 2.25 0 0 1 7.5 3.75Z" />
+              </svg>
+            </span>
+            <span>
+              <span class="block text-sm font-bold tracking-tight text-[#0f172a]">{{ feat.title }}</span>
+              <span class="mt-1 block text-sm leading-6 text-[#475569]">{{ feat.description }}</span>
+            </span>
           </li>
         </ul>
       </div>
-
-      <p class="relative z-10 font-mono text-[.65rem] tracking-widest text-slate-700">
-        v1.0 · Internes System
-      </p>
     </aside>
 
     <!-- Right: Form panel -->
-    <main class="flex flex-1 items-center justify-center px-6 py-10">
-      <div class="w-full max-w-[420px]">
+    <main class="flex flex-1 items-center justify-center px-5 py-8 sm:px-8 lg:bg-[#fbfdff]">
+      <div class="w-full max-w-[440px]">
+        <div class="mb-8 flex items-center justify-center gap-3 lg:hidden">
+          <svg class="h-10 w-10 shrink-0" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="17" y="2" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="32" y="2" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="2" y="17" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="17" y="17" width="10" height="10" rx="1.5" fill="#1547d1" opacity="0.6" />
+            <rect x="32" y="17" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="2" y="32" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="17" y="32" width="10" height="10" rx="1.5" fill="#1547d1" />
+            <rect x="32" y="32" width="10" height="10" rx="1.5" fill="#1547d1" opacity="0.6" />
+          </svg>
+          <span class="text-lg font-bold tracking-tight text-[#0f172a]">Support Desk</span>
+        </div>
+
+        <section class="rounded-xl border border-[#dbe3ef] bg-white px-8 py-9 shadow-[0_18px_45px_rgba(15,23,42,0.08)] sm:px-10">
+
         <!-- Header -->
-        <p
-          class="mb-3 font-mono text-[.65rem] font-semibold uppercase tracking-[.2em] text-amber-500"
-        >
+        <p class="mb-4 text-[.68rem] font-bold uppercase tracking-[.12em] text-[#1d4ed8]">
           ANMELDUNG
         </p>
-        <h2 class="mb-2 text-3xl font-bold tracking-tight text-slate-100">Willkommen zurück</h2>
-        <p class="mb-8 text-sm font-light text-slate-500">
+        <h2 class="mb-3 text-2xl font-bold tracking-tight text-[#111827]">Willkommen zurück</h2>
+        <p class="mb-7 max-w-[280px] text-sm leading-6 text-[#475569]">
           Melden Sie sich mit Ihren Zugangsdaten an.
         </p>
 
         <!-- Global error -->
         <div
           v-if="uiState === 'error'"
-          class="mb-6 flex items-start gap-2.5 rounded-md border border-red-500/25 bg-red-500/8 px-3.5 py-3 text-sm text-red-300"
+          class="mb-5 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
           role="alert"
         >
           <svg class="mt-px h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
@@ -100,7 +105,7 @@
           <!-- Email -->
           <div>
             <label
-              class="mb-1.5 block text-[.72rem] font-semibold uppercase tracking-[.08em] text-slate-400"
+              class="mb-1.5 block text-xs font-semibold text-[#334155]"
               for="email"
             >
               E-Mail-Adresse
@@ -112,14 +117,14 @@
               autocomplete="email"
               placeholder="agent@example.com"
               :disabled="uiState === 'loading'"
-              class="w-full rounded-md border bg-[#131620] px-3.5 py-3 font-mono text-sm text-slate-200 placeholder-slate-700 outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+              class="h-11 w-full rounded-md border bg-white px-4 text-sm text-[#111827] placeholder-[#9ca3af] outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
               :class="
                 v$.email.$error
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                  : 'border-[#1e2535] focus:border-amber-500 focus:ring-amber-500/15'
+                  ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                  : 'border-[#cbd5e1] focus:border-[#2563eb] focus:ring-blue-100'
               "
             />
-            <p v-if="v$.email.$error" class="mt-1.5 font-mono text-xs text-red-400">
+            <p v-if="v$.email.$error" class="mt-1.5 text-xs text-red-600">
               {{
                 v$.email.required.$invalid
                   ? 'E-Mail-Adresse ist erforderlich.'
@@ -131,7 +136,7 @@
           <!-- Password -->
           <div>
             <label
-              class="mb-1.5 block text-[.72rem] font-semibold uppercase tracking-[.08em] text-slate-400"
+              class="mb-1.5 block text-xs font-semibold text-[#334155]"
               for="password"
             >
               Passwort
@@ -144,21 +149,21 @@
                 autocomplete="current-password"
                 placeholder="••••••••"
                 :disabled="uiState === 'loading'"
-                class="w-full rounded-md border bg-[#131620] py-3 pl-3.5 pr-10 font-mono text-sm text-slate-200 placeholder-slate-700 outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                class="h-11 w-full rounded-md border bg-white pl-4 pr-10 text-sm text-[#111827] placeholder-[#9ca3af] outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
                 :class="
                   v$.password.$error
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                    : 'border-[#1e2535] focus:border-amber-500 focus:ring-amber-500/15'
+                    ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                    : 'border-[#cbd5e1] focus:border-[#2563eb] focus:ring-blue-100'
                 "
               />
               <button
                 type="button"
-                class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-600 transition hover:text-slate-400 disabled:opacity-40"
+                class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#9ca3af] transition hover:text-[#374151] disabled:opacity-40"
                 :disabled="uiState === 'loading'"
                 @click="showPassword = !showPassword"
                 :aria-label="showPassword ? 'Passwort verstecken' : 'Passwort anzeigen'"
               >
-                <svg v-if="!showPassword" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                <svg v-if="showPassword" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
                   <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                   <path
                     fill-rule="evenodd"
@@ -178,7 +183,7 @@
                 </svg>
               </button>
             </div>
-            <p v-if="v$.password.$error" class="mt-1.5 font-mono text-xs text-red-400">
+            <p v-if="v$.password.$error" class="mt-1.5 text-xs text-red-600">
               Passwort ist erforderlich.
             </p>
           </div>
@@ -187,7 +192,7 @@
           <button
             type="submit"
             :disabled="uiState === 'loading'"
-            class="mt-2 flex w-full items-center justify-center gap-2 rounded-md bg-amber-500 py-3 text-sm font-semibold tracking-wide text-[#0c0e14] transition hover:bg-amber-400 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-70"
+            class="mt-1 flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#1547d1] text-sm font-semibold text-white shadow-sm transition hover:bg-[#0f3db7] active:translate-y-px disabled:cursor-not-allowed disabled:bg-[#b6c7e8]"
           >
             <svg
               v-if="uiState === 'loading'"
@@ -195,23 +200,19 @@
               viewBox="0 0 24 24"
               fill="none"
             >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              />
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
             {{ uiState === 'loading' ? 'Anmelden…' : 'Anmelden' }}
           </button>
         </form>
 
-        <p class="mt-6 text-center text-xs text-slate-700 leading-relaxed">
+        <div class="mt-8 h-px bg-[#e5e7eb]"></div>
+
+        <p class="mt-5 text-xs leading-5 text-[#64748b]">
           Probleme mit dem Zugang? Wenden Sie sich an den Administrator.
         </p>
+        </section>
       </div>
     </main>
   </div>
@@ -230,7 +231,23 @@ const authStore = useAuthStore()
 const uiState = ref('initial')
 const errorMessage = ref('')
 const showPassword = ref(false)
-const features = ['Ticket-Management', 'Kundenhistorie', 'Rollenbasierter Zugriff']
+const features = [
+  {
+    icon: 'ticket',
+    title: 'Ticket-Management',
+    description: 'Erfassen, priorisieren und verfolgen Sie Tickets effizient.',
+  },
+  {
+    icon: 'users',
+    title: 'Kundenhistorie',
+    description: 'Behalten Sie alle Kundeninteraktionen und Historien im Blick.',
+  },
+  {
+    icon: 'shield',
+    title: 'Rollenbasierter Zugriff',
+    description: 'Gewähren Sie rollenbasierte Zugriffe für mehr Sicherheit und Kontrolle.',
+  },
+]
 
 const form = reactive({ email: '', password: '' })
 
