@@ -29,6 +29,7 @@ Fachliche Wahrheit liegt nicht in dieser Datei, sondern in `docs/domain/`.
 
 - Vue.js
 - Tailwind CSS
+- FontAwesomeIcon
 - Pinia
 - ofetch
 - Vuelidate
@@ -148,6 +149,7 @@ Enthält wiederverwendbare technische Standardmuster für:
 - Pinia
 - Vuelidate
 - ofetch
+
 
 Diese Dateien liefern technische Standardstrukturen, aber keine fachliche Wahrheit.
 
