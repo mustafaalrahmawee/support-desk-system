@@ -62,6 +62,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
+            'model' => App\Models\InternalUser::class,
         ],
 
         // 'users' => [

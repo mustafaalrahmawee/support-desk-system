@@ -95,73 +95,28 @@
                   <FontAwesomeIcon :icon="faBars" class="h-4 w-4" />
                 </button>
 
-                <span class="font-medium text-[#64748b]">Home</span>
-                <FontAwesomeIcon :icon="faChevronRight" class="h-3 w-3 text-[#94a3b8]" />
-                <span class="font-medium text-[#64748b]">Tickets</span>
-                <FontAwesomeIcon :icon="faChevronRight" class="h-3 w-3 text-[#94a3b8]" />
-                <span class="font-semibold text-[#0f172a]">Dashboard</span>
+                <span class="font-semibold text-[#0f172a]">{{ pageTitle }}</span>
               </div>
 
               <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-end">
-                <div class="flex min-w-0 flex-1 items-center gap-3 lg:max-w-[420px]">
-                  <label
-                    class="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-[#dbe3ef] bg-[#fbfdff] px-4 py-3 shadow-sm"
-                  >
-                    <FontAwesomeIcon :icon="faMagnifyingGlass" class="h-4 w-4 text-[#64748b]" />
-                    <input
-                      type="text"
-                      placeholder="Search tickets, customers, contacts..."
-                      class="min-w-0 flex-1 bg-transparent text-sm text-[#0f172a] outline-none placeholder:text-[#94a3b8]"
-                    />
-                    <span
-                      class="hidden rounded-md border border-[#dbe3ef] bg-white px-2 py-1 text-xs font-semibold text-[#64748b] sm:inline-flex"
-                    >
-                      ⌘K
-                    </span>
-                  </label>
-                </div>
-
                 <div class="flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border border-[#dbe3ef] bg-white px-4 py-3 text-sm font-semibold text-[#2563eb] shadow-sm transition hover:bg-[#f8fbff]"
-                  >
-                    <FontAwesomeIcon :icon="faPlus" class="h-3.5 w-3.5" />
-                    <span>New Ticket</span>
-                    <FontAwesomeIcon :icon="faChevronDown" class="h-3 w-3 text-[#64748b]" />
-                  </button>
-
-                  <button
-                    type="button"
-                    class="inline-flex items-center gap-2 rounded-xl border border-[#dbe3ef] bg-white px-4 py-3 text-sm font-semibold text-[#2563eb] shadow-sm transition hover:bg-[#f8fbff]"
-                  >
-                    <FontAwesomeIcon :icon="faBolt" class="h-3.5 w-3.5" />
-                    <span>Quick Actions</span>
-                    <FontAwesomeIcon :icon="faChevronDown" class="h-3 w-3 text-[#64748b]" />
-                  </button>
-
                   <button
                     type="button"
                     class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[#475569] transition hover:bg-[#f8fafc]"
                     aria-label="Benachrichtigungen"
                   >
                     <FontAwesomeIcon :icon="faBell" class="h-4 w-4" />
-                    <span
-                      class="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2563eb] px-1 text-[0.6rem] font-bold text-white"
-                    >
-                      8
-                    </span>
                   </button>
 
-                  <button
-                    type="button"
+                  <RouterLink
+                    :to="{ name: 'profile' }"
                     class="inline-flex items-center gap-3 rounded-xl border border-transparent px-2 py-1.5 transition hover:bg-[#f8fafc]"
                   >
                     <div class="relative">
                       <div
                         class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#d9e6ff] text-sm font-bold text-[#1d4ed8]"
                       >
-                        AM
+                        {{ userInitials }}
                       </div>
                       <span
                         class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-[#41b55e]"
@@ -169,11 +124,20 @@
                     </div>
 
                     <span class="hidden text-left sm:block">
-                      <span class="block text-sm font-semibold text-[#0f172a]">Arjun Menon</span>
-                      <span class="block text-sm text-[#64748b]">Support Agent</span>
+                      <span class="block text-sm font-semibold text-[#0f172a]">{{ userName }}</span>
+                      <span class="block text-sm text-[#64748b]">{{ authStore.user?.email }}</span>
                     </span>
+                  </RouterLink>
 
-                    <FontAwesomeIcon :icon="faChevronDown" class="hidden h-3 w-3 text-[#64748b] sm:block" />
+                  <button
+                    type="button"
+                    :disabled="isLoggingOut"
+                    class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-[#475569] transition hover:bg-[#fee2e2] hover:text-[#b91c1c] disabled:opacity-40"
+                    aria-label="Abmelden"
+                    @click="handleLogout"
+                  >
+                    <FontAwesomeIcon v-if="isLoggingOut" :icon="faSpinner" spin class="h-4 w-4" />
+                    <FontAwesomeIcon v-else :icon="faArrowRightFromBracket" class="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -190,25 +154,56 @@
 </template>
 
 <script setup>
+import { computed, ref } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
   faAddressBook,
+  faArrowRightFromBracket,
   faBars,
   faBell,
-  faBolt,
-  faChevronDown,
   faChevronRight,
   faFileCircleCheck,
   faHeadset,
   faInbox,
-  faMagnifyingGlass,
   faMessage,
-  faPlus,
   faShieldHalved,
+  faSpinner,
   faTableCellsLarge,
   faTicket,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons'
+import { useAuthStore } from '@/stores/auth.store'
+
+const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
+
+const pageTitle = computed(() => route.meta?.title ?? route.name ?? '')
+
+const isLoggingOut = ref(false)
+
+const userInitials = computed(() => {
+  const u = authStore.user
+  if (!u) return ''
+  return `${u.first_name?.[0] ?? ''}${u.last_name?.[0] ?? ''}`.toUpperCase()
+})
+
+const userName = computed(() => {
+  const u = authStore.user
+  if (!u) return ''
+  return `${u.first_name ?? ''} ${u.last_name ?? ''}`.trim()
+})
+
+const handleLogout = async () => {
+  isLoggingOut.value = true
+  try {
+    await authStore.logout()
+    await router.replace({ name: 'login' })
+  } finally {
+    isLoggingOut.value = false
+  }
+}
 
 const primaryNavItems = [
   {
