@@ -114,8 +114,7 @@ Für jeden UC im bestätigten Plan:
 
 1. `docs/by-use-case/{uc}.md` lesen
 2. globale Design-Referenzen prüfen:
-   - `docs/design-references/app-shell.png`
-   - `docs/design-references/navigation-header.png`
+  - `docs/design-references/app-shell.png`
 3. passende UC-Referenz prüfen:
    - `docs/design-references/{domain}/{uc}_*.png` oder entsprechend dokumentierte Datei
 4. `docs/patterns/frontend-vue.md` als technisches Muster verwenden
