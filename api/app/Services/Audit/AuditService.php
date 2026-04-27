@@ -15,7 +15,7 @@ class AuditService
         ?array $oldValues,
         ?array $newValues,
     ): void {
-        AuditLog::query()->create([
+        AuditLog::create([
             'internal_user_id' => $user->id,
             'context_type' => 'internal_user',
             'context_name' => null,
