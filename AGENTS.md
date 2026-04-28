@@ -2,62 +2,34 @@
 
 ## Zweck
 
-Diese Datei steuert das Arbeitsverhalten von Codex in Review- und Refactoring-Sessions.
+Diese Datei steuert das Arbeitsverhalten von Codex für das Smart Support Desk System.
 
 Für fachliche Wahrheit, Dokumentstruktur, Leseregeln und Grundregeln gilt `docs/README.md`.
 
-Diese Datei regelt nur:
-- Review-Start
-- Code-Review-Modus
-- Refactoring-Empfehlungen
-- zusätzliche technische Review-Regeln
+Diese Datei regelt:
+- verfügbare Session-Typen
+- Subagenten-Verhalten
+- Git-Ermittlung
 
 ---
 
-## Review-Start
+## Verfügbare Session-Typen
 
-Verwendung:
-- `/review-session <domain>`
-- `/review-session <domain> <bundle>`
+| Befehl | Skill | Zweck |
+|---|---|---|
+| `/review-session <domain> [bundle]` | `.codex/skills/review-session/SKILL.md` | Read-only Code-Review nach einer Implementierungs-Session |
+| `/domain-doc-generator <domain>` | `.agents/skills/domain-doc-generator/SKILL.md` | Domain-Datei, Use-Case-Dateien und Design-Prompts generieren |
 
-Jede Review-Session ist read-only.
-
-Ablauf:
-1. Session-Kontext bestimmen
-2. geänderte Dateien über Git ermitteln
-3. Backend-Review durchführen
-4. Frontend-Review durchführen
-5. finalen Bericht erstellen
-6. keine Codeänderungen durchführen
+Ablauf und Schritte stehen im jeweiligen Skill.
 
 ---
 
-## Review-Subagenten
+## Subagenten
 
 - `backend-code-review` und `frontend-code-review` sind read-only
+- sie ändern keinen Code und schreiben keine Dateien
 - sie prüfen Codequalität, Architekturtreue und Refactoring-Potenzial
-- sie testen nicht funktional, außer der Benutzer fordert es ausdrücklich
-- sie ändern keinen Code
-- sie schreiben keine Dateien
-- sie refactoren nicht selbst
-
-Reihenfolge:
-1. `backend-code-review` ausführen
-2. Backend-Bericht abwarten
-3. `frontend-code-review` ausführen
-4. Frontend-Bericht abwarten
-5. Gesamtbericht für den Benutzer erstellen
-
-Wenn ein Review Fehler oder Verbesserungen meldet:
-1. Bericht analysieren
-2. Empfehlungen nach Kritisch / Sollte / Optional einordnen
-3. keine Änderung ohne Benutzerentscheidung durchführen
-4. finalen Refactoring-Vorschlag für Claude Code formulieren
-
-Nach dem Review:
-- Codex beendet die Session mit einem Bericht
-- Claude Code oder der Benutzer entscheidet über Umsetzung
-- Codex implementiert keine Refactorings in Review-Sessions
+- der Hauptagent entscheidet über Nachbesserungen basierend auf dem Bericht
 
 ---
 
