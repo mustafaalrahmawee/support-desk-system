@@ -18,7 +18,7 @@ Diese Datei regelt:
 | Befehl | Skill | Zweck |
 |---|---|---|
 | `/review-session <domain> [bundle]` | `.codex/skills/review-session/SKILL.md` | Read-only Code-Review nach einer Implementierungs-Session |
-| `/domain-doc-generator <domain>` | `.agents/skills/domain-doc-generator/SKILL.md` | Domain-Datei, Use-Case-Dateien und Design-Prompts generieren |
+| `/domain-doc-generator <domain>` | `.agents/skills/domain-doc-generator/SKILL.md` | Domain-Datei, Use-Case-Dateien, Design-Prompts und Use-Case-Designbilder generieren |
 
 Ablauf und Schritte stehen im jeweiligen Skill.
 

@@ -1,10 +1,10 @@
 ---
 name: domain-doc-generator
-description: Generiert oder aktualisiert für eine Domain die Koordinator-Datei unter docs/by-domain, die Use-Case-Dateien unter docs/by-use-case und die Design-Prompt-Dateien unter docs/design-prompts. Verwendung z.B. /domain-doc-generator auth oder /domain-doc-generator users.
+description: Generiert oder aktualisiert für eine Domain die Koordinator-Datei unter docs/by-domain, die Use-Case-Dateien unter docs/by-use-case, die Design-Prompt-Dateien unter docs/design-prompts und die zugehörigen Use-Case-Designbilder. Verwendung z.B. /domain-doc-generator auth oder /domain-doc-generator users.
 argument-hint: <domain>
 ---
 
-# Domain-Dokumente und Design-Prompts für Domain: $0
+# Domain-Dokumente, Design-Prompts und Bilder für Domain: $0
 
 Dieser Skill erzeugt oder aktualisiert die Dokumente für genau eine Domain.
 
@@ -12,6 +12,7 @@ Zielartefakte:
 - `docs/by-domain/$0.md`
 - `docs/by-use-case/*.md` für alle Use Cases der Domain
 - `docs/design-prompts/$0/*.md` für alle Use Cases der Domain
+- `docs/design-references/$0/*.png` als generierte Designbilder für alle Use Cases der Domain
 
 Für Grundregeln, Leseregeln und Dokumenthierarchie gilt `docs/README.md`.
 Für Review-Regeln und Arbeitsverhalten gilt `AGENTS.md`.
@@ -24,7 +25,7 @@ Lies in dieser Reihenfolge:
 1. `docs/README.md`
 2. `docs/domain/04_use-cases.md` — finde den Abschnitt `# $0 Domain` und entnimm alle zugehörigen Use Cases
 3. bei Bedarf zusätzlich `docs/domain/01_miniworld.md`, `docs/domain/02_business-rules.md`, `docs/domain/03_er.md`
-4. bestehende Dateien unter `docs/by-domain/`, `docs/by-use-case/` und `docs/design-prompts/`, falls vorhanden
+4. bestehende Dateien unter `docs/by-domain/`, `docs/by-use-case/`, `docs/design-prompts/` und `docs/design-references/`, falls vorhanden
 
 Dateinamen für Use-Case-Dateien: `uc<nummer>_<slug>.md` (z. B. `uc36_login.md`).
 Wenn bereits passende Dateien existieren, übernimm deren Dateinamen.
@@ -85,7 +86,6 @@ Erzeuge oder aktualisiere für jeden Use Case genau eine Datei unter:
 
 `docs/design-prompts/$0/<use-case-dateiname>`
 
-Beispiel: `docs/design-prompts/auth/uc36_login.md`
 
 Struktur pro Datei:
 - `# Design Prompt — UC-XX ...`
@@ -102,6 +102,26 @@ Der Prompt selbst soll:
 - klare Layout-, Inhalts- und Zustandsanforderungen nennen
 - ausdrücklich verbieten, nicht dokumentierte Felder, Tabs, KPIs oder Admin-Funktionen zu ergänzen
 - so formuliert sein, dass er direkt in einem Bild- oder UI-Generator verwendet werden kann
+
+---
+
+## Schritt 4: Designbilder generieren
+
+Generiere für jeden Use Case ein Designbild auf Basis der passenden Prompt-Datei.
+
+Zielpfad pro Bild:
+
+`docs/design-references/$0/<use-case-dateiname-ohne-md>.png`
+
+Beispiel: `docs/design-references/auth/uc36_login.png`
+
+Regeln:
+- nutze die jeweilige Datei aus `docs/design-prompts/$0/` als Prompt-Grundlage
+- berücksichtige vorhandene globale Referenzen wie `docs/design-references/app-shell.png`, falls sie für den Screen relevant sind
+- vorhandene Use-Case-Bilder unter `docs/design-references/$0/` nur ersetzen, wenn der Benutzer das ausdrücklich verlangt oder der aktuelle Skill-Aufruf eine Aktualisierung der Bilder umfasst
+- wenn das Bildmodell kein direktes Speichern in den Zielpfad erlaubt, generiere das Bild im Chat und nenne den vorgesehenen Zielpfad
+- nach der Bildgenerierung muss die zugehörige Use-Case-Datei im Abschnitt `## 8. UI-Referenz` auf den Zielpfad verweisen
+- die Domain-Datei muss im Abschnitt `## Design-Referenzen` alle erzeugten oder erwarteten Use-Case-Bilder auflisten
 
 ---
 
