@@ -19,7 +19,7 @@ Diese Datei regelt:
 | Befehl | Skill | Zweck |
 |---|---|---|
 | `/session <domain> [bundle]` | `.agents/skills/session/SKILL.md` | Implementierungs-Session für eine Domain oder ein Bundle |
-| `/domain-doc-generator <domain>` | `.agents/skills/domain-doc-generator/SKILL.md` | Domain-Datei, Use-Case-Dateien, Design-Prompts und Use-Case-Designbilder generieren |
+| `/domain-doc-generator <domain>` | `.agents/skills/domain-doc-generator/SKILL.md` | Domain-Datei, Use-Case-Dateien und Design-Prompts generieren |
 
 Ablauf und Schritte stehen im jeweiligen Skill.
 

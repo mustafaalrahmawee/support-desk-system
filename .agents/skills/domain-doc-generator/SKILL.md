@@ -1,10 +1,10 @@
 ---
 name: domain-doc-generator
-description: Generiert oder aktualisiert für eine Domain die Koordinator-Datei unter docs/by-domain, die Use-Case-Dateien unter docs/by-use-case, die Design-Prompt-Dateien unter docs/design-prompts und die zugehörigen Use-Case-Designbilder. Verwendung z.B. /domain-doc-generator auth oder /domain-doc-generator users.
+description: Generiert oder aktualisiert für eine Domain die Koordinator-Datei unter docs/by-domain, die Use-Case-Dateien unter docs/by-use-case und die Design-Prompt-Dateien unter docs/design-prompts. Verwendung z.B. /domain-doc-generator auth oder /domain-doc-generator users.
 argument-hint: <domain>
 ---
 
-# Domain-Dokumente, Design-Prompts und Bilder für Domain: $0
+# Domain-Dokumente und Design-Prompts für Domain: $0
 
 Dieser Skill erzeugt oder aktualisiert die Dokumente für genau eine Domain.
 
@@ -12,7 +12,12 @@ Zielartefakte:
 - `docs/by-domain/$0.md`
 - `docs/by-use-case/*.md` für alle Use Cases der Domain
 - `docs/design-prompts/$0/*.md` für alle Use Cases der Domain
-- `docs/design-references/$0/*.png` als generierte Designbilder für alle Use Cases der Domain
+
+Nicht-Ziel:
+- keine Designbilder generieren
+- keine Dateien unter `docs/design-references/$0/*.png` erzeugen oder ersetzen
+
+Nach Abschluss dieses Skills kopiert der Benutzer die Design-Prompts manuell in ein externes Bild- oder UI-Generierungstool, lädt die erzeugten Bilder herunter und legt sie selbst unter `docs/design-references/$0/` ab.
 
 Für Grundregeln, Leseregeln und Dokumenthierarchie gilt `docs/README.md`.
 Für Arbeitsregeln und Projektverhalten gilt `AGENTS.md`.
@@ -105,23 +110,16 @@ Der Prompt selbst soll:
 
 ---
 
-## Schritt 4: Designbilder generieren
+## Schritt 4: Abschluss
 
-Generiere für jeden Use Case ein Designbild auf Basis der passenden Prompt-Datei.
+Nach dem Erzeugen oder Aktualisieren der Design-Prompt-Dateien stoppt der Skill.
 
-Zielpfad pro Bild:
+Der Skill darf keine Designbilder generieren.
 
-`docs/design-references/$0/<use-case-dateiname-ohne-md>.png`
-
-Beispiel: `docs/design-references/auth/uc36_login.png`
-
-Regeln:
-- nutze die jeweilige Datei aus `docs/design-prompts/$0/` als Prompt-Grundlage
-- berücksichtige vorhandene globale Referenzen wie `docs/design-references/app-shell.png`, falls sie für den Screen relevant sind
-- vorhandene Use-Case-Bilder unter `docs/design-references/$0/` nur ersetzen, wenn der Benutzer das ausdrücklich verlangt oder der aktuelle Skill-Aufruf eine Aktualisierung der Bilder umfasst
-- wenn das Bildmodell kein direktes Speichern in den Zielpfad erlaubt, generiere das Bild im Chat und nenne den vorgesehenen Zielpfad
-- nach der Bildgenerierung muss die zugehörige Use-Case-Datei im Abschnitt `## 8. UI-Referenz` auf den Zielpfad verweisen
-- die Domain-Datei muss im Abschnitt `## Design-Referenzen` alle erzeugten oder erwarteten Use-Case-Bilder auflisten
+Er soll dem Benutzer am Ende knapp nennen:
+- welche Design-Prompt-Dateien erzeugt oder aktualisiert wurden
+- dass diese Prompts extern zur Bildgenerierung verwendet werden
+- dass die fertigen PNG-Dateien anschließend manuell unter `docs/design-references/$0/` abgelegt werden sollen
 
 ---
 
