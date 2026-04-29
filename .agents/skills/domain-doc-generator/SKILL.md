@@ -15,7 +15,7 @@ Zielartefakte:
 - `docs/design-references/$0/*.png` als generierte Designbilder für alle Use Cases der Domain
 
 Für Grundregeln, Leseregeln und Dokumenthierarchie gilt `docs/README.md`.
-Für Review-Regeln und Arbeitsverhalten gilt `AGENTS.md`.
+Für Arbeitsregeln und Projektverhalten gilt `AGENTS.md`.
 
 ---
 

@@ -44,7 +44,8 @@ Fachliche Wahrheit liegt nicht in dieser Datei, sondern in `docs/domain/`.
 ### QA
 
 - Backend-QA über `curl` und `php artisan tinker`
-- Frontend-QA über Playwright MCP
+- Frontend-QA als Human-in-the-loop Browserprüfung
+- Playwright nur auf ausdrückliche Benutzeranforderung
 
 ---
 
@@ -236,10 +237,10 @@ Die fachliche Umsetzung bleibt weiterhin vollständig an die dokumentierten Proj
 
 1. `docs/by-use-case/{uc}.md` lesen
 2. Backend anhand der Use-Case-Dokumentation umsetzen
-3. Backend-QA ausführen
+3. Backend-QA-Plan erzeugen, manuelle Benutzerergebnisse auswerten
 4. visuelle Referenzen prüfen
 5. Frontend anhand der Use-Case-Dokumentation, der Pattern-Dateien und der Design-Referenzen umsetzen
-6. Frontend-QA ausführen
+6. Frontend-QA-Plan erzeugen, manuelle Benutzerergebnisse auswerten
 
 ---
 

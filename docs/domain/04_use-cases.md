@@ -1362,7 +1362,7 @@ Ein Admin speichert Änderungen an einem internen Benutzerkonto.
 ## UC-43 Internen Benutzer deaktivieren, soft löschen oder reaktivieren
 
 **Ziel**  
-Ein internes Benutzerkonto wird fachlich konsistent deaktiviert, soft deleted oder reaktiviert.
+Ein internes Benutzerkonto wird fachlich konsistent deaktiviert, soft gelöscht oder aus dem soft-gelöschten Zustand wiederhergestellt.
 
 **Primäre Akteure**  
 Admin
@@ -1375,10 +1375,10 @@ Internal User, Actor, Ticket, Audit-Log
 - Das Benutzerkonto existiert.
 
 **Trigger**  
-Ein Admin ändert den Aktivstatus eines internen Benutzers.
+Ein Admin ändert den Status eines internen Benutzers oder stellt ein soft-gelöschtes Benutzerkonto wieder her.
 
 **Hauptablauf**
-1. Das System deaktiviert oder soft deleted den internen Benutzer bzw. reaktiviert ihn.
+1. Das System deaktiviert den internen Benutzer, soft deleted ihn bzw. stellt ihn aus dem soft-gelöschten Zustand wieder her.
 2. Das System synchronisiert den gebundenen Actor fachlich konsistent.
 3. Bestehende Ticket-Zuweisungen werden aufgehoben oder neu vergeben, wenn der Benutzer nicht mehr aktiv ist.
 4. Der Vorgang wird atomar ausgeführt, sofern erforderlich.
@@ -1386,6 +1386,7 @@ Ein Admin ändert den Aktivstatus eines internen Benutzers.
 
 **Nachbedingungen**
 - Das Benutzerkonto und gebundene Objekte sind fachlich konsistent geändert.
+- Ein zuvor soft-gelöschtes Benutzerkonto kann wieder aktiv sein, sofern fachlich zulässig.
 
 ---
 
