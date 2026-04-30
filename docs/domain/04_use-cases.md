@@ -1416,7 +1416,7 @@ Diese Datei eignet sich als Grundlage für:
 - `docs/by-domain/*.md`
 - `docs/by-use-case/ucXX_*.md`
 - API-Contract-Ableitung
-- Controller/Policy/Action-Zuschnitt
+- Route-/FormRequest-/Controller-/Service-/Model-Zuschnitt
 - Frontend-Screen-Zuschnitt
 - Testableitung aus Vorbedingungen, Ablauf und Nachbedingungen
 

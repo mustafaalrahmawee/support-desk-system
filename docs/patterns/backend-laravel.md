@@ -11,34 +11,33 @@ Für technische Arbeitsregeln und QA-Verhalten gilt `CLAUDE.md`.
 
 ## Technische Muster
 
-- Controller bleiben dünn — Fachlogik gehört in Actions
-- FormRequests enthalten nur formale Validierung
-- Autorisierung läuft über Policies
+- Controller bleiben dünn und nehmen HTTP-Requests entgegen
+- FormRequests enthalten formale Validierung
+- Einfache Model-Aufrufe dürfen direkt im Controller erfolgen
+- Services werden nur verwendet, wenn Logik länger, wiederverwendbar oder atomar ist
 - Fachlich zusammenhängende Änderungen laufen atomar über `DB::transaction()`
-- Audit wird innerhalb fachlich relevanter Actions ausgelöst
-- Jobs rufen Actions auf und enthalten keine Fachlogik
-- Soft Delete wird nicht direkt im Controller orchestriert
+- Audit wird bei fachlich relevanten Änderungen im passenden Service oder direkt nach dem Model-Aufruf ausgelöst
+- Jobs rufen Services auf und enthalten keine Fachlogik
+- Soft Delete wird nicht direkt im Controller orchestriert, wenn gebundene Objekte mitbetroffen sind
 - Fachliche Exceptions statt generischer Exceptions verwenden
 
 ---
 
 ## Request-Lifecycle
 
-Route → Middleware → FormRequest → Controller → Policy → Action → Model → Response
+Route → Middleware → FormRequest → Controller → Service wenn nötig → Model → Response
 
 ---
 
 ## Ordnerstruktur
 
     api/app/
-    ├── Actions/
     ├── Http/
     │   ├── Controllers/
     │   ├── Requests/
     │   └── Middleware/
     ├── Jobs/
     ├── Models/
-    ├── Policies/
     ├── Services/
     └── Support/
         ├── Enums/
@@ -160,21 +159,28 @@ class StoreTicketRequest extends FormRequest
 
 namespace App\Http\Controllers\Tickets;
 
-use App\Actions\Tickets\StoreTicketAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tickets\StoreTicketRequest;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 
-class StoreTicketController extends Controller
+class TicketController extends Controller
 {
-    public function __invoke(
-        StoreTicketRequest $request,
-        StoreTicketAction $action
-    ): JsonResponse {
-        $this->authorize('create', Ticket::class);
+    public function store(StoreTicketRequest $request): JsonResponse
+    {
+        $data = $request->validated();
 
-        $ticket = $action->execute($request->validated(), $request->user());
+        $ticket = Ticket::query()->create([
+            'subject' => $data['subject'],
+            'description' => $data['description'],
+            'status' => 'open',
+            'priority' => $data['priority'] ?? 'normal',
+            'channel' => $data['channel'],
+            'category_id' => $data['category_id'],
+            'customer_id' => $data['customer_id'],
+            'contract_id' => $data['contract_id'] ?? null,
+            'assigned_internal_user_id' => $data['assigned_internal_user_id'] ?? null,
+        ]);
 
         return response()->json([
             'message' => 'Vorgang erfolgreich.',
@@ -186,62 +192,62 @@ class StoreTicketController extends Controller
 
 ---
 
-## Policy-Muster
+## Controller mit Service-Muster
 
 ```php
 <?php
 
-namespace App\Policies;
+namespace App\Http\Controllers\Tickets;
 
-use App\Models\InternalUser;
-use App\Models\Ticket;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Tickets\StoreTicketRequest;
+use App\Services\Tickets\TicketService;
+use Illuminate\Http\JsonResponse;
 
-class TicketPolicy
+class TicketController extends Controller
 {
-    public function create(InternalUser $user): bool
-    {
-        return $user->hasRole('support_agent');
+    public function __construct(
+        private readonly TicketService $ticketService
+    ) {
     }
 
-    public function update(InternalUser $user, Ticket $ticket): bool
+    public function store(StoreTicketRequest $request): JsonResponse
     {
-        return $user->hasRole('support_agent');
-    }
+        $ticket = $this->ticketService->createTicket(
+            data: $request->validated(),
+            actor: $request->user(),
+        );
 
-    public function viewAny(InternalUser $user): bool
-    {
-        return $user->hasRole('support_agent');
-    }
-
-    public function view(InternalUser $user, Ticket $ticket): bool
-    {
-        return $user->hasRole('support_agent');
+        return response()->json([
+            'message' => 'Vorgang erfolgreich.',
+            'data' => $ticket,
+        ], 201);
     }
 }
 ```
 
 ---
 
-## Action-Muster
+## Service-Muster
 
 ```php
 <?php
 
-namespace App\Actions\Tickets;
+namespace App\Services\Tickets;
 
 use App\Models\InternalUser;
 use App\Models\Ticket;
 use App\Services\Audit\AuditService;
 use Illuminate\Support\Facades\DB;
 
-class StoreTicketAction
+class TicketService
 {
     public function __construct(
         private readonly AuditService $auditService
     ) {
     }
 
-    public function execute(array $data, InternalUser $actor): Ticket
+    public function createTicket(array $data, InternalUser $actor): Ticket
     {
         return DB::transaction(function () use ($data, $actor) {
             $ticket = Ticket::query()->create([
@@ -272,7 +278,7 @@ class StoreTicketAction
 
 ---
 
-## Service-Muster
+## Audit-Service-Muster
 
 ```php
 <?php
@@ -363,20 +369,20 @@ DB::transaction(function () use ($data) {
 ```php
 <?php
 
-namespace App\Actions\Customers;
+namespace App\Services\Customers;
 
 use App\Models\Customer;
 use App\Services\Audit\AuditService;
 use Illuminate\Support\Facades\DB;
 
-class SoftDeleteCustomerAction
+class CustomerService
 {
     public function __construct(
         private readonly AuditService $auditService
     ) {
     }
 
-    public function execute(Customer $customer, $actor): void
+    public function softDeleteCustomer(Customer $customer, $actor): void
     {
         DB::transaction(function () use ($customer, $actor) {
             $customer->contacts()->each(function ($contact) {
@@ -407,7 +413,7 @@ class SoftDeleteCustomerAction
 
 namespace App\Jobs\Inbound;
 
-use App\Actions\Inbound\ProcessInboundReviewCaseAction;
+use App\Services\Inbound\InboundReviewService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -420,9 +426,9 @@ class ProcessInboundReviewCaseJob implements ShouldQueue
     ) {
     }
 
-    public function handle(ProcessInboundReviewCaseAction $action): void
+    public function handle(InboundReviewService $inboundReviewService): void
     {
-        $action->execute($this->inboundReviewCaseId);
+        $inboundReviewService->processReviewCase($this->inboundReviewCaseId);
     }
 }
 ```
@@ -432,11 +438,11 @@ class ProcessInboundReviewCaseJob implements ShouldQueue
 ## Route-Muster
 
 ```php
-use App\Http\Controllers\Tickets\StoreTicketController;
+use App\Http\Controllers\Tickets\TicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/tickets', StoreTicketController::class);
+    Route::post('/tickets', [TicketController::class, 'store']);
 });
 ```
 
@@ -448,5 +454,6 @@ Zusätzlich zu den Regeln in `CLAUDE.md` und `docs/README.md` gelten:
 
 - FormRequests mit komplexer Fachlogik
 - Generische Exceptions für fachliche Konflikte
-- Direktes `$model->delete()` im Controller
+- Rollen- oder Statuslogik verstreut im Controller
+- Direktes `$model->delete()` im Controller, wenn gebundene Objekte fachlich mitbetroffen sind
 - Jobs mit eigener Fachlogik

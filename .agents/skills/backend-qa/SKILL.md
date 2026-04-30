@@ -161,7 +161,7 @@ Nach Auswertung liefert der Skill einen kompakten Bericht mit:
 - geprüfte Use Cases
 - bestandene, fehlgeschlagene, blockierte Punkte
 - wichtigste Soll/Ist-Abweichungen
-- vermutete betroffene Schicht (z. B. FormRequest, Policy, Action, Response-Struktur, Audit-Service, Transaktion)
+- vermutete betroffene Schicht (z. B. FormRequest, Controller, Service, Model, Response-Struktur, Audit-Service, Transaktion)
 - empfohlene Korrekturrichtung
 
 Der Bericht ist knapp, strukturiert und ausschließlich belegbasiert.

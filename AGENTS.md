@@ -64,7 +64,7 @@ Nach 3 erfolglosen Versuchen:
 Zusätzlich zu den Grundregeln in `docs/README.md` gelten:
 
 - Keine Fachlogik im Controller
-- Keine Rollenabfragen verstreut statt in Policies
+- Keine Rollenabfragen verstreut im Controller
 - Keine fehlende Transaktion bei atomaren Fachvorgängen
 - Audit bei fachlich relevanten Änderungen nicht vergessen
 - Keine Rollen- oder Statuslogik im Frontend erfinden

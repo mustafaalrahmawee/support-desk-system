@@ -63,7 +63,7 @@ Erstelle einen strukturierten Plan mit:
 - **Reihenfolge:** UC-Liste in Implementierungsreihenfolge
 - **Pro UC:**
   - Datei: `docs/by-use-case/{uc}.md`
-  - Backend: Route, Controller, Action, Model
+  - Backend: Route, FormRequest, Controller, Service wenn nötig, Model
   - Frontend: Page, Store-Funktion, benötigte Design-Referenz
 - **Abhängigkeiten:** Was vorher existieren muss
 - **Dateien die erzeugt oder geändert werden**
