@@ -531,3 +531,25 @@ Das System soll so erweiterbar sein, dass feinere Rollen- und Berechtigungsmodel
 Das System soll so erweiterbar sein, dass AI-Agenten künftig als eigenständige Kommunikationsakteure oder als unterstützende Komponenten bei Inbound-Prüfung, Spam-Erkennung oder Zuordnungsvorschlägen modelliert werden können, sofern hierfür die fachlichen Actor- und Autorisierungsregeln entsprechend erweitert werden.
 
 Bestehende Regeln zu Historie, Audit, Identität und Soft Delete müssen auch bei künftigen Erweiterungen erhalten bleiben.
+
+---
+
+## 19. AI-Erweiterungsregeln (geplant)
+
+Die folgenden Regeln gelten für die geplante schrittweise Integration von AI-Features. Sie ergänzen die bestehenden Business Rules, ersetzen sie nicht.
+
+AI-Komponenten sind assistive Werkzeuge innerhalb des Systems. Sie dürfen Vorschläge erzeugen, zusammenfassen, klassifizieren und relevante Dokumente suchen. Sie dürfen keine kritischen Business-Entscheidungen ungeprüft ausführen.
+
+AI darf nicht automatisch: Tickets schließen, Customers mergen, Nachrichten an Kunden senden, Contracts in Konfliktfällen setzen, Business Rules umgehen, Autorisierung umgehen, Daten direkt kritisch ändern.
+
+Jeder AI-Aufruf muss als `ai_run` nachvollziehbar gespeichert werden. AI-Vorschläge müssen als `ai_suggestion` mit Status `pending`, `accepted`, `rejected` oder `expired` gespeichert werden. Kein AI-Vorschlag darf ungeprüft als finale Business-Änderung übernommen werden.
+
+Bei hoher AI-Sicherheit darf das System Vorschläge prominent anzeigen. Bei Unsicherheit muss ein Inbound Review Case erstellt oder aktualisiert werden. Die Entscheidung über die Annahme oder Ablehnung eines AI-Vorschlags obliegt einem berechtigten internen Benutzer.
+
+RAG-Antworten müssen auf gefundenen Quellen basieren. Wenn keine ausreichenden Quellen gefunden werden, darf das System keine erfundene Antwort erzeugen.
+
+Wenn eine AI-gestützte Antwort oder ein AI-Vorschlag ausgelöst wird, muss dies als Audit-Ereignis mit `context_type = ai_agent` protokollierbar sein.
+
+Agent-Tools dürfen nicht beliebig direkte DB-Änderungen durchführen. Schreibende Agent-Tools müssen über Application Services laufen und Business Rules prüfen. Kritische Agent-Aktionen sollen zuerst `ai_suggestions` erzeugen.
+
+Diese Regeln gelten zusätzlich zu den bestehenden Audit-Regeln, Inbound-Prüffall-Regeln und Autorisierungsregeln.

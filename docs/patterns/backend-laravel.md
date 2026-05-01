@@ -13,6 +13,8 @@ Für technische Arbeitsregeln und QA-Verhalten gilt `CLAUDE.md`.
 
 - Controller bleiben dünn und nehmen HTTP-Requests entgegen
 - FormRequests enthalten formale Validierung
+- Authentifizierung läuft über Laravel Sanctum
+- Rollen und Permissions laufen über Spatie Laravel Permission Middleware
 - Einfache Model-Aufrufe dürfen direkt im Controller erfolgen
 - Services werden nur verwendet, wenn Logik länger, wiederverwendbar oder atomar ist
 - Fachlich zusammenhängende Änderungen laufen atomar über `DB::transaction()`
@@ -25,7 +27,7 @@ Für technische Arbeitsregeln und QA-Verhalten gilt `CLAUDE.md`.
 
 ## Request-Lifecycle
 
-Route → Middleware → FormRequest → Controller → Service wenn nötig → Model → Response
+Route → Middleware (Sanctum + Spatie Permission) → FormRequest → Controller → Service wenn nötig → Model → Response
 
 ---
 
@@ -441,10 +443,30 @@ class ProcessInboundReviewCaseJob implements ShouldQueue
 use App\Http\Controllers\Tickets\TicketController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'permission:tickets.create'])->group(function () {
     Route::post('/tickets', [TicketController::class, 'store']);
 });
 ```
+
+---
+
+## Permission-Muster
+
+```php
+use App\Http\Controllers\Users\UserController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::post('/users', [UserController::class, 'store']);
+});
+
+Route::middleware(['auth:sanctum', 'permission:tickets.assign'])->group(function () {
+    Route::patch('/tickets/{ticket}/assign', [TicketController::class, 'assign']);
+});
+```
+
+Rollen- und Permission-Namen werden fachlich aus den Use Cases abgeleitet.
+Das Frontend darf Rollen- oder Permission-Entscheidungen nicht selbst erfinden.
 
 ---
 
@@ -454,6 +476,8 @@ Zusätzlich zu den Regeln in `CLAUDE.md` und `docs/README.md` gelten:
 
 - FormRequests mit komplexer Fachlogik
 - Generische Exceptions für fachliche Konflikte
-- Rollen- oder Statuslogik verstreut im Controller
+- Eigene Rollen-/Permission-Tabellen neben Spatie Laravel Permission
+- Rollen- oder Permission-Checks verstreut im Controller
+- Statuslogik verstreut im Controller
 - Direktes `$model->delete()` im Controller, wenn gebundene Objekte fachlich mitbetroffen sind
 - Jobs mit eigener Fachlogik

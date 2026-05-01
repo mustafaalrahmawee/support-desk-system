@@ -301,3 +301,13 @@ Dadurch bleiben Identität, Kommunikation, Verträge, Dokumente und Nachvollzieh
 Das System ist so konzipiert, dass zusätzliche Kommunikationskanäle und künftige Erweiterungen integriert werden können, ohne die grundlegende Fachlogik des Systems zu verändern.
 
 Dies gilt auch für künftige Erweiterungen im Bereich Vertragslogik, Produktbezug, Leistungspakete, feinere Rollen- und Berechtigungsmodelle, SLA-Regeln und KI-gestützte Unterstützung.
+
+### AI-gestützte Unterstützung (geplante Erweiterung)
+
+Das System soll schrittweise um AI-gestützte Features erweitert werden, die interne Benutzer bei der Bearbeitung von Supportfällen unterstützen.
+
+Geplante AI-Features umfassen: Ticket-Zusammenfassungen, Antwortvorschläge, Kategorie- und Prioritätsvorschläge, strukturierte Aufbereitung eingehender Nachrichten sowie semantische Suche über Contract- und Support-Dokumente (RAG).
+
+AI-Komponenten sind assistive Werkzeuge. Sie dürfen Vorschläge erzeugen, zusammenfassen, klassifizieren und relevante Dokumente suchen. Kritische Business-Entscheidungen wie das Schließen von Tickets, das Mergen von Customers oder das Senden von Kundennachrichten dürfen nicht automatisch durch AI ausgeführt werden, sondern erfordern die Validierung durch den Application Layer und bei Unsicherheit die Freigabe durch einen internen Benutzer.
+
+Alle AI-Aktionen müssen nachvollziehbar und auditierbar sein.

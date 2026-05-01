@@ -24,7 +24,7 @@ LABEL maintainer="support-desk-system"
 # Install system dependencies and PHP extensions
 RUN apk add --no-cache \
         bash \
-        libpq-dev \
+        mysql-client \
         libzip-dev \
         zip \
         unzip \
@@ -32,8 +32,7 @@ RUN apk add --no-cache \
         curl \
     && docker-php-ext-install \
         pdo \
-        pdo_pgsql \
-        pgsql \
+        pdo_mysql \
         zip \
         opcache \
         pcntl

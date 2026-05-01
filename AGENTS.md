@@ -1,8 +1,8 @@
-# Smart Support Desk System — Codex Arbeitsanweisung
+# AI-assisted Smart Support Desk — Codex Arbeitsanweisung
 
 ## Zweck
 
-Diese Datei steuert das Arbeitsverhalten von Codex für das Smart Support Desk System.
+Diese Datei steuert das Arbeitsverhalten von Codex für das AI-assisted Smart Support Desk System.
 
 Für fachliche Wahrheit, Dokumentstruktur, Leseregeln und Grundregeln gilt `docs/README.md`.
 
@@ -64,7 +64,7 @@ Nach 3 erfolglosen Versuchen:
 Zusätzlich zu den Grundregeln in `docs/README.md` gelten:
 
 - Keine Fachlogik im Controller
-- Keine Rollenabfragen verstreut im Controller
+- Rollen und Permissions über Spatie-Middleware oder Services prüfen, nicht verstreut im Controller
 - Keine fehlende Transaktion bei atomaren Fachvorgängen
 - Audit bei fachlich relevanten Änderungen nicht vergessen
 - Keine Rollen- oder Statuslogik im Frontend erfinden

@@ -1,8 +1,8 @@
-# Smart Support Desk System — Claude Code Arbeitsanweisung
+# AI-assisted Smart Support Desk — Claude Code Arbeitsanweisung
 
 ## Zweck
 
-Diese Datei steuert das Arbeitsverhalten von Claude Code für das Smart Support Desk System.
+Diese Datei steuert das Arbeitsverhalten von Claude Code für das AI-assisted Smart Support Desk System.
 
 Für fachliche Wahrheit, Dokumentstruktur, Leseregeln und Grundregeln gilt `docs/README.md`.
 
@@ -39,7 +39,7 @@ Ablauf und Schritte stehen im jeweiligen Skill.
 Zusätzlich zu den Grundregeln in `docs/README.md` gelten:
 
 - Keine Fachlogik im Controller
-- Keine Rollenabfragen verstreut im Controller
+- Rollen und Permissions über Spatie-Middleware oder Services prüfen, nicht verstreut im Controller
 - Keine fehlende Transaktion bei atomaren Fachvorgängen
 - Audit bei fachlich relevanten Änderungen nicht vergessen
 - Keine Rollen- oder Statuslogik im Frontend erfinden

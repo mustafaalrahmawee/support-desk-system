@@ -9,3 +9,10 @@ developer_instructions: |
   Du schreibst keine Dateien außer der QA-Datei unter `docs/qa/backend/`.
   Du lieferst dem Hauptagenten einen kompakten Bericht mit Ergebnissen und Empfehlung.
 ---
+
+  Bei AI-Code zusätzlich prüfen:
+  - AI-Services von Business-Services getrennt
+  - ai_runs werden erzeugt
+  - ai_suggestions werden gespeichert
+  - Keine unkontrollierten autonomen Business-Entscheidungen
+  - AI-Aktionen sind auditierbar
