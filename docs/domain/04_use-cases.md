@@ -1148,7 +1148,7 @@ Login oder Logout wird ausgelöst.
 **Hauptablauf**
 1. Das System verarbeitet Authentifizierung oder Abmeldung.
 2. Das System dokumentiert den Vorgang im Audit-Log.
-3. Bei tokenbasierter API-Authentifizierung werden die zugehörigen Token fachlich konsistent behandelt.
+3. Bei API-Authentifizierung werden die zugehörigen Personal Access Tokens fachlich konsistent behandelt.
 
 **Nachbedingungen**
 - Login und Logout sind nachvollziehbar dokumentiert.
@@ -1179,7 +1179,7 @@ Ein interner Benutzer sendet seine Anmeldedaten.
 1. Der Benutzer gibt seine Zugangsdaten ein.
 2. Das System prüft die Authentifizierung.
 3. Das System gewährt Zugriff auf interne Funktionen.
-4. Falls Token-basierte API-Authentifizierung verwendet wird, wird ein Token erzeugt oder verwendet.
+4. Das System erzeugt oder verwendet einen Personal Access Token für die API-Authentifizierung.
 5. Der Login wird auditiert.
 
 **Alternativen / Ausnahmen**
@@ -1209,7 +1209,7 @@ Der Benutzer löst den Logout aus.
 
 **Hauptablauf**
 1. Das System beendet die aktuelle Authentifizierung.
-2. Falls verwendet, werden zugehörige Token fachlich konsistent entzogen oder beendet.
+2. Zugehörige Personal Access Tokens werden fachlich konsistent entzogen oder beendet.
 3. Der Logout wird auditiert.
 
 **Nachbedingungen**

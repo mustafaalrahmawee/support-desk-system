@@ -16,6 +16,7 @@ Für technische Arbeitsregeln und QA-Verhalten gilt `CLAUDE.md`.
 - Stores enthalten API-nahe Logik
 - Formulare verwenden Vuelidate
 - Request-Aufrufe laufen über ein gemeinsames `useApiFetch()`-Composable
+- Geschützte API-Requests senden den Personal Access Token als `Authorization: Bearer <token>`
 - Tailwind CSS wird für Layout und Komponenten verwendet
 - Icons werden über Font Awesome eingebunden, nicht über Inline-`svg`/`path`
 - Backend-Validierungsfehler werden im UI sichtbar dargestellt
