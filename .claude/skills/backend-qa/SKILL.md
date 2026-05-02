@@ -45,10 +45,11 @@ Falls die Datei bereits existiert: bestehende Benutzerergebnisse respektieren, n
 
 Nach Abschluss einer Backend-Domain:
 
-1. `docs/domain/01_miniworld.md`, `02_business-rules.md`, `03_er.md` lesen
-2. `docs/by-domain/{domain}.md` lesen
-3. alle zur Domain gehörenden `docs/by-use-case/{uc}.md` lesen
-4. daraus genau eine QA-Datei für die Domain erzeugen
+1. `docs/by-domain/{domain}.md` lesen — daraus die zugehörigen Use Cases entnehmen
+2. alle zur Domain gehörenden `docs/by-use-case/{uc}.md` lesen — Abschnitte 1 (Use Case), 2 (API-Contract), 3 (Backend-Architektur) und 4 (Backend-QA) enthalten die nötigen fachlichen und technischen Details
+3. daraus genau eine QA-Datei für die Domain erzeugen
+
+Die Use-Case-Dateien sind bereits aus den Domain-Grundlagen abgeleitet. Ein zusätzliches Lesen von `docs/domain/` ist nicht nötig.
 
 ### Phase 2: Benutzerergebnisse auswerten
 
@@ -83,11 +84,8 @@ Die Datei unter `docs/qa/backend/{domain}.md` wird in dieser Struktur erzeugt:
 
 ## Quellen
 
-- `docs/domain/01_miniworld.md`
-- `docs/domain/02_business-rules.md`
-- `docs/domain/03_er.md`
 - `docs/by-domain/{domain}.md`
-- `docs/by-use-case/{uc}.md`
+- `docs/by-use-case/{uc}.md` (pro Use Case)
 
 ## Vorbedingungen
 
