@@ -17,6 +17,8 @@ Diese Datei regelt:
 
 | Befehl | Skill | Zweck |
 |---|---|---|
+| `/session <domain> [bundle]` | `.claude/skills/session/SKILL.md` | Implementierungs-Session für eine Domain oder ein Bundle |
+| `/domain-doc-generator <domain>` | `.claude/skills/domain-doc-generator/SKILL.md` | Domain-Datei, Use-Case-Dateien und Design-Prompts generieren |
 | `/review-session <domain> [bundle]` | `.claude/skills/review-session/SKILL.md` | Read-only Code-Review nach einer Implementierungs-Session |
 
 Ablauf und Schritte stehen im jeweiligen Skill.
@@ -25,12 +27,66 @@ Ablauf und Schritte stehen im jeweiligen Skill.
 
 ## Subagenten
 
+### QA-Subagenten
+
+- `backend-qa` und `frontend-qa` sind code-read-only — sie ändern keinen Anwendungscode
+- sie dürfen QA-Dateien unter `docs/qa/` erzeugen und aktualisieren
+- sie erzeugen QA-Pläne und werten belegte Benutzerergebnisse aus
+- sie führen keine fachlichen Acceptance-Tests selbst aus
+- sie dürfen technische Infrastruktur-Checks vorbereiten oder beschreiben, aber nicht als bestandene Fachtests werten
+
+Nach dem Erzeugen eines QA-Plans stoppt der Agent und wartet auf dokumentierte Benutzerergebnisse.
+Playwright darf nur verwendet werden, wenn der Benutzer es ausdrücklich für diese QA-Ausführung anfordert.
+
+Wenn QA Fehler meldet:
+1. Bericht analysieren
+2. gezielt korrigieren
+3. QA-Plan aktualisieren oder Benutzerergebnisse erneut auswerten
+4. maximal 3 gezielte Nachbesserungsversuche
+
+Nach 3 erfolglosen Versuchen:
+- stoppen
+- Benutzer informieren
+- offenen Fehler, Ursache und bisherige Fixes dokumentieren
+
 ### Code-Review-Subagenten
 
 - `backend-code-review` und `frontend-code-review` sind read-only
 - sie ändern keinen Code und schreiben keine Dateien
 - sie prüfen Codequalität, Architekturtreue und Refactoring-Potenzial
 - der Hauptagent entscheidet über Nachbesserungen basierend auf dem Bericht
+
+---
+
+## Frontend-QA Fehlerklassen
+
+- Typ A: UI-Fehler → Frontend darf angepasst werden
+- Typ B: Infrastruktur → keine Vue-Änderung, zuerst Ursache klären
+- Typ C: Backend-Logik → Backend korrigieren, nicht Frontend
+
+---
+
+## Session-Start (Pflicht)
+
+Jede Implementierungs-Session startet im Plan-Mode.
+
+Vor jeder Implementierung gilt:
+1. Plan erstellen
+2. Plan bestätigen lassen
+3. Erst danach implementieren
+
+---
+
+## Git-Ermittlung
+
+Claude Code prüft geänderte Dateien über:
+
+```bash
+git status --short
+git diff --name-only
+git diff --stat
+git diff --cached --name-only
+```
 
 ---
 
@@ -48,7 +104,7 @@ Zusätzlich zu den Grundregeln in `docs/README.md` gelten:
 
 ## Workflow-Hinweis
 
-Implementierung und QA werden von Codex ausgeführt (siehe `AGENTS.md`).
-Claude Code übernimmt nach der Implementierung das Code-Review über `/review-session`.
+Beide Agents (Claude Code und Codex) verfügen über den vollständigen Satz an Skills und Subagenten.
+Jeder Agent kann Implementierung, QA und Code-Review durchführen.
 
 Bei Kontextfülle: `/clear` und mit dem nächsten Schritt weitermachen.

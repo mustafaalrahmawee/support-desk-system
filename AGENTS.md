@@ -20,6 +20,7 @@ Diese Datei regelt:
 |---|---|---|
 | `/session <domain> [bundle]` | `.agents/skills/session/SKILL.md` | Implementierungs-Session für eine Domain oder ein Bundle |
 | `/domain-doc-generator <domain>` | `.agents/skills/domain-doc-generator/SKILL.md` | Domain-Datei, Use-Case-Dateien und Design-Prompts generieren |
+| `/review-session <domain> [bundle]` | `.agents/skills/review-session/SKILL.md` | Read-only Code-Review nach einer Implementierungs-Session |
 
 Ablauf und Schritte stehen im jeweiligen Skill.
 
@@ -48,6 +49,13 @@ Nach 3 erfolglosen Versuchen:
 - stoppen
 - Benutzer informieren
 - offenen Fehler, Ursache und bisherige Fixes dokumentieren
+
+### Code-Review-Subagenten
+
+- `backend-code-review` und `frontend-code-review` sind read-only
+- sie ändern keinen Code und schreiben keine Dateien
+- sie prüfen Codequalität, Architekturtreue und Refactoring-Potenzial
+- der Hauptagent entscheidet über Nachbesserungen basierend auf dem Bericht
 
 ---
 
@@ -92,3 +100,12 @@ git diff --name-only
 git diff --stat
 git diff --cached --name-only
 ```
+
+---
+
+## Workflow-Hinweis
+
+Beide Agents (Codex und Claude Code) verfügen über den vollständigen Satz an Skills und Subagenten.
+Jeder Agent kann Implementierung, QA und Code-Review durchführen.
+
+Bei Kontextfülle: `/clear` und mit dem nächsten Schritt weitermachen.
